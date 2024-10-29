@@ -10,6 +10,7 @@ settingService = SettingService(settingRepository)
 @product.route('/product')
 @login_required
 def list_products():
+    """! List products."""
     premadeboxs = settingService.get_setting(**{'type':'Premadebox', 'name':'size_num_price'})
     small_box = settingService.get_setting(**{'type':'Product_form', 'name':'Premadebox_S'})
     medium_box = settingService.get_setting(**{'type':'Product_form', 'name':'Premadebox_M'})

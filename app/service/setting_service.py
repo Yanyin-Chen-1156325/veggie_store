@@ -1,10 +1,14 @@
 from app.data_access.setting_repository import SettingRepository
 
 class SettingService:
+    """! SettingService class for business logic.
+    This class contains methods to interact with the SettingRepository class.
+    """
     def __init__(self, setting_repository: SettingRepository):
         self.setting_repository = setting_repository
 
     def get_setting(self, **kwargs):
+        """! Get a setting by type or name or value or all settings. paser the setting value to a list of dictionary."""
         rlt = self.setting_repository.get_setting(**kwargs)
         if kwargs.get('type') == 'Premadebox':
             premadeboxes = []
@@ -39,4 +43,5 @@ class SettingService:
             return rlt_sort
     
     def create_setting(self, **kwargs):
+        """! Create a setting."""
         return self.setting_repository.create_setting(**kwargs)

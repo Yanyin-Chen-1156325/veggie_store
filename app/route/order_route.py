@@ -14,11 +14,13 @@ settingRepository = SettingRepository(db.session)
 settingService = SettingService(settingRepository)
 
 def format_decimal(value):
+    """! Format a decimal value to 2 decimal places."""
     return Decimal(str(value)).quantize(Decimal('0.01'))
 
 @order.route('/order/add_to_list', methods=['POST'])
 @login_required
 def add_to_list():
+    """! Add an item to the shopping list."""
     if 'user_id' not in session or session['user_id'] != current_user.id:
         session['shopping_list'] = []
         session['user_id'] = current_user.id
@@ -74,6 +76,7 @@ def add_to_list():
 @order.route('/order/view_list')
 @login_required
 def view_list():
+    """! View the shopping list."""
     if 'shopping_list' not in session:
         session['shopping_list'] = []
     elif 'user_id' not in session or session['user_id'] != current_user.id:
@@ -93,6 +96,7 @@ def view_list():
 @order.route('/order/remove_from_list', methods=['POST'])
 @login_required
 def remove_from_list():
+    """! Remove an item from the shopping list."""
     name = request.form.get('name')
     if 'shopping_list' in session:
         for item in session['shopping_list']:
@@ -106,6 +110,7 @@ def remove_from_list():
 @order.route('/order/clear_list')
 @login_required
 def clear_list():
+    """! Clear the shopping list."""
     session.pop('shopping_list', None)
     flash('Your shopping list has been cleared', 'success')
     return redirect(url_for('product.list_products'))
@@ -113,6 +118,7 @@ def clear_list():
 @order.route('/order/place_order', methods=['POST'])
 @login_required
 def place_order():
+    """! Place an order."""
     if 'shopping_list' not in session or not session['shopping_list']:
         flash('Your shopping list is empty', 'error')
         return redirect(url_for('product.view_list'))
@@ -152,6 +158,7 @@ def place_order():
 @order.route('/order')
 @login_required
 def list_orders():
+    """! List orders. Staff can view all orders, customers can view their own orders."""
     if current_user.type == 'staff':
         orders = orderService.get_Order()
     else:
@@ -161,6 +168,7 @@ def list_orders():
 @order.route('/order/view_order', methods=['GET'])
 @login_required
 def view_order():
+    """! View an order details."""
     order_id = request.args.get('id')
     order = orderService.get_Order(order_id)
     return render_template('order_form.html', order=order)
@@ -168,6 +176,7 @@ def view_order():
 @order.route('/order/update_status', methods=['POST'])
 @login_required
 def update_status():
+    """! Update an order's status. if the order is cancelled, return the payment to the customer's balance or card."""
     order_id = request.form.get('id')
     action = request.form.get('action')
 

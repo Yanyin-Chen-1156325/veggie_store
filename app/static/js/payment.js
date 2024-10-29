@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const debitCardForm = document.getElementById('debitCardForm');
     const paymentMethod = document.getElementsByName('payment_method');
 
+    //show credit card form or debit card form based on payment method
     paymentMethod.forEach(function(radio) {
         radio.addEventListener('change', function() {
             if (this.value === 'Credit') {
@@ -19,17 +20,20 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    //toggle required attribute for inputs in the form
     function toggleRequired(formId, required) {
         const form = document.getElementById(formId);
         const inputs = form.querySelectorAll('input, select');
         inputs.forEach(input => input.required = required);
     }
 
+    //validate card number
     document.querySelector('input[name="cardNumber"]').addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
         e.target.value = value;
     });
 
+    //validate expiry date
     const expiryInput = document.querySelector('input[name="cardExpiryDate"]');
     expiryInput.addEventListener('input', function(e) {
         let value = e.target.value.replace(/\D/g, '');
@@ -39,7 +43,7 @@ document.addEventListener('DOMContentLoaded', function() {
         e.target.value = value;
         validateExpiryDate(this);
     });
-
+    //validate on form submit
     function validateExpiryDate(input) {
         const value = input.value;
         const today = new Date();
@@ -69,20 +73,4 @@ document.addEventListener('DOMContentLoaded', function() {
         input.classList.remove('is-invalid');
         input.setCustomValidity('');
     }
-
-    function validateAmount(input) {
-        const maxBalance = parseFloat('{{ current_user.custBalance }}');
-        const amount = parseFloat(input.value);
-        
-        if (amount > maxBalance) {
-          input.classList.add('is-invalid');
-          input.setCustomValidity('Amount exceeds balance');
-        } else if (amount <= 0) {
-          input.classList.add('is-invalid');
-          input.setCustomValidity('Amount must be greater than 0');
-        } else {
-          input.classList.remove('is-invalid');
-          input.setCustomValidity('');
-        }
-      }
 });

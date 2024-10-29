@@ -21,7 +21,7 @@ class PremadeBox(Product):
     boxSize = db.Column(db.String(5), nullable=False)
     numOfBoxes = db.Column(db.Integer, nullable=False)
     boxPrice = db.Column(db.Numeric(10, 2), nullable=False)
-    veggies = db.relationship('Veggie', secondary=premadebox_veggie)
+    veggies = db.relationship('Veggie', secondary=premadebox_veggie) # many-to-many relationship
 
     __mapper_args__ = {
         'polymorphic_identity': 'premadebox',

@@ -14,7 +14,8 @@ document.addEventListener('DOMContentLoaded', function() {
     let maxOwingValue = maxOwingInput.value
     let discountValue = discountInput.value
     let minBalanceValue = minBalanceInput.value
-  
+
+    //show department field, address field, max owing field, discount field, min balance field based on person type
     typeSelect.addEventListener('change', function() {
       if (this.value === 'staff') {
         departmentField.style.display = 'block';

@@ -2,14 +2,16 @@ from app.data_access.order_repository import OrderRepository
 from app.models.Order import *
 from .. import db
 from datetime import datetime, timedelta
-from decimal import Decimal
-
 
 class OrderService:
+    """! OrderService class for business logic.
+    This class contains methods to interact with the OrderRepository class.
+    """
     def __init__(self, order_repository: OrderRepository):
         self.order_repository = order_repository
 
     def get_grouped(self, lst, type):
+        """! Get a list of products grouped by type."""
         rlt =[]
         if type == 'premadebox':
             for item in lst:
@@ -24,9 +26,11 @@ class OrderService:
         return rlt
     
     def get_Order(self, order_id=None, order_customer=None):
+        """! Get an order by ID or customer or all orders."""
         return self.order_repository.get_Order(order_id, order_customer)
     
     def place_order(self, **kwargs):
+        """! Place an order."""
         try:
             order = Order(
                 orderCustomer=kwargs.get('username'),
@@ -56,6 +60,7 @@ class OrderService:
             return str(e)
         
     def _create_orderitem(self, order: Order, index_item, item):
+        """! Create an order item."""
         orderitem = OrderItem(
             itemNumber=self.order_repository.generate_orderitem_id(order, index_item),
             order_id=order.id
@@ -75,18 +80,21 @@ class OrderService:
         return rlt
         
     def update_order(self, order_id, status=None, payment=None):
+        """! Update an order's status or payment method."""
         try:
             return self.order_repository.update_order(order_id, status, payment)
         except Exception as e:
             return str(e)
         
     def check_minbalance(self, minbalance, totalAmount):
+        """! Check if the total amount is greater than the minimum balance for corporate customers."""
         if minbalance > totalAmount:
             return False
         else:
             return True
         
     def get_daily_sales(self):
+        """! Get daily sales."""
         end_date = datetime.now()
         start_date = end_date - timedelta(days=6)
 
@@ -103,6 +111,7 @@ class OrderService:
         return result
     
     def get_weekly_sales(self):
+        """! Get weekly sales."""
         end_date = datetime.now()
         start_date = end_date - timedelta(weeks=1)
         
@@ -119,6 +128,7 @@ class OrderService:
         return result
     
     def get_monthly_sales(self):
+        """! Get monthly sales."""
         end_date = datetime.now()
         first_day = end_date.replace(day=1)
         last_month_last_day = first_day - timedelta(days=1)
@@ -137,6 +147,7 @@ class OrderService:
         return result
     
     def get_yearly_sales(self):
+        """! Get yearly sales."""
         end_date = datetime.now()
         start_date = end_date - timedelta(days=365)
 
@@ -153,6 +164,7 @@ class OrderService:
         return result
     
     def get_top_products(self, limit=5):
+        """! Get the top products by quantity sold"""
         top_products = self.order_repository.get_top_products(limit)
         
         if isinstance(top_products, str) is True:

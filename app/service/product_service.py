@@ -2,19 +2,26 @@ from app.data_access.product_repository import ProductRepository
 from app.models.Product import *
 
 class ProductService:
+    """! ProductService class for business logic.
+    This class contains methods to interact with the ProductRepository class.
+    """
     def __init__(self, product_repository: ProductRepository):
         self.product_repository = product_repository
 
     def veggie_exists(self, vegName):
+        """! Check if a veggie exists in the DB."""
         return self.product_repository.veggie_exists(vegName)
     
     def premadebox_exists(self, boxSize):
+        """! Check if a premadebox exists in the DB."""
         return self.product_repository.premadebox_exists(boxSize)
 
     def get_product(self, id=None, selectType=None):
+        """! Get a product by ID or type or all products."""
         return self.product_repository.get_product(id, selectType)
     
     def add_product(self, item):
+        """! create a product."""
         try:
             if item['type'] == 'premadebox':
                 premadebox = PremadeBox(
@@ -41,6 +48,7 @@ class ProductService:
             return str(e)
         
     def create_veggie(self, item):
+        """! Create a veggie."""
         try:
             if item['type'] == 'weight':
                 product = WeightedVeggie(vegName=item['name'],

@@ -33,8 +33,8 @@ class Customer(Person):
     custBalance = db.Column(db.Numeric(10, 2), nullable=False)
     custAddress = db.Column(db.String(200), nullable=False)
     maxOwing = db.Column(db.Numeric(10, 2), nullable=False)
-    payments = db.relationship('Payment', backref='customer')
-    orders = db.relationship('Order', backref='customer')
+    payments = db.relationship('Payment', backref='customer') # one-to-many relationship
+    orders = db.relationship('Order', backref='customer') # one-to-many relationship
 
     __mapper_args__ = {
         'polymorphic_identity': 'customer',

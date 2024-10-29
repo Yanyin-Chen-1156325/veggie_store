@@ -7,7 +7,6 @@ from app.database import db, init_db
 
 pymysql.install_as_MySQLdb()
 
-# initialize login manager
 login_manager = LoginManager()
 login_manager.login_view = 'auth.home'
 
@@ -20,6 +19,7 @@ def create_app():
     init_db(app)
     login_manager.init_app(app)
 
+    """! Register blueprints."""
     from .route.auth_route import auth as auth_blueprint
     from .route.person_route import person as person_blueprint
     from .route.product_route import product as product_blueprint
@@ -34,7 +34,7 @@ def create_app():
     with app.app_context():
         db.create_all()
 
-
+        """! Initialize the database with some data."""
         from app.service.setting_service import SettingService, SettingRepository
         setting_repository = SettingRepository(db.session)
         setting_service = SettingService(setting_repository)

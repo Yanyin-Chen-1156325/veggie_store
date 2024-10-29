@@ -14,6 +14,7 @@ personService = PersonService(personRepository)
 @payment.route('/payment')
 @login_required
 def list_payments():
+    """! List payments. If the user is a staff, list all payments. If the user is a customer, list only their payments."""
     if current_user.type == 'staff':
         payments = paymentService.get_payment()
     else:
@@ -23,6 +24,7 @@ def list_payments():
 @payment.route('/payment/view_payment', methods=['GET'])
 @login_required
 def view_payment():
+    """! View a payment details."""
     payment_id = request.args.get('payment_id')
     payment = paymentService.get_payment(id=payment_id)
     return render_template('payment_form.html', payment=payment)
@@ -30,6 +32,7 @@ def view_payment():
 @payment.route('/make_a_payment')
 @login_required
 def pay():
+    """! Payment page for making a payment."""
     order_id = request.args.get('order_id')
     order = None
     if order_id is not None:
@@ -39,6 +42,7 @@ def pay():
 @payment.route('/payment/process_payment', methods=['POST'])
 @login_required
 def process_payment():
+    """! Process a payment."""
     order_id = request.form.get('order_id')
     payment_method = request.form.get('payment_method')
     if payment_method == 'Credit':

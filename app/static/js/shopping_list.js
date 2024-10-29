@@ -44,6 +44,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function updatePaymentOptions(canPayLater, remainingCredit, total) {
+        // Update pay now or pay later button
         if (payLaterButton && paymentWarning) {
             if (canPayLater) {
                 payLaterButton.disabled = false;

@@ -1,3 +1,4 @@
+// Initialize password input with default value
 document.addEventListener('DOMContentLoaded', function() {
     var passwordInput = document.getElementById('password');
     var defaultPassword = document.currentScript.getAttribute('data-default-password');
@@ -7,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+// flash messages for 5 seconds
 document.addEventListener('DOMContentLoaded', function() {
     var alerts = document.querySelectorAll('.alert');
     alerts.forEach(function(alert) {

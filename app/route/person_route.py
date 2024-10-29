@@ -14,6 +14,7 @@ settingService = SettingService(settingRepository)
 @person.route('/person')
 @login_required
 def list_persons():
+    """! List persons. If the user is a staff, list all persons. If the user is a customer, list only their details."""
     if current_user.type == 'staff':
         selectType = request.args.get('select_type')
         if selectType:
@@ -29,6 +30,7 @@ def list_persons():
 @person.route('/person/create', methods=['POST'])
 @login_required
 def create_person():
+    """! Create a person."""
     mode = "add"
     if request.method == 'POST':
         person = {
@@ -72,6 +74,7 @@ def create_person():
 @person.route('/person/edit', methods=['GET', 'POST'])
 @login_required
 def edit_person():
+    """! update a person."""
     mode = "edit"
     id = request.args.get('id')
     if request.method == 'POST':
@@ -105,6 +108,7 @@ def edit_person():
 @person.route('/person/view', methods=['GET'])
 @login_required
 def view_person():
+    """! View a person details."""
     id = request.args.get('id')
     mode = "view"
     person = personService.get_user(id)
@@ -113,6 +117,7 @@ def view_person():
 @person.route('/person/delete', methods=['POST'])
 @login_required
 def delete_person():
+    """! Delete a person."""
     id = request.form.get('id')
     rlt = personService.delete_user(id)
     if isinstance(rlt, str) is not True:
@@ -124,6 +129,7 @@ def delete_person():
 @person.route('/person/report')
 @login_required
 def sales_report():
+    """! Generate a sales report."""
     daily_sales = orderService.get_daily_sales()
     if isinstance(daily_sales, str) is True:
         flash(f'Failed to get daily sales. ' + daily_sales, 'error')

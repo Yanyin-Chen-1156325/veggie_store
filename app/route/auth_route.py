@@ -9,10 +9,12 @@ personService = PersonService(personRepository)
 
 @auth.route('/')
 def home():
+    """! Home page for the app. now using login page"""
     return redirect(url_for('auth.login'))
 
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
+    """! Login page for the app."""
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
@@ -34,6 +36,7 @@ def login():
 @auth.route('/logout', methods=['POST'])
 @login_required
 def logout():
+    """! Logout the user."""
     session.pop('shopping_list', None)
     logout_user()
     return redirect(url_for('auth.home'))

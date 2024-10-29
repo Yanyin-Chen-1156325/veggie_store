@@ -25,11 +25,11 @@ class Order(db.Model):
     totalAmount = db.Column(db.Numeric(10, 2), nullable=True)
     paymentMethod = db.Column(db.String(20), nullable=True) # credit card or debit card or balance
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.person_id'))
-    orderitems = db.relationship('OrderItem', backref='order')
+    orderitems = db.relationship('OrderItem', backref='order') # one-to-many relationship
 
 class OrderItem(db.Model):
     __tablename__ = 'orderitem'
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'))
     itemNumber = db.Column(db.String(16), primary_key=True, nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('product.id'))
-    product = db.relationship('Product', backref=backref('orderitem', uselist=False))
+    product = db.relationship('Product', backref=backref('orderitem', uselist=False)) # one-to-one relationship
