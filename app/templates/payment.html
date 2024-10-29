@@ -136,6 +136,7 @@
           </div>
           {% endif %}
           <input type="hidden" name="paymentAmount" value="{{ order.totalAmount if order else current_user.custBalance }}">
+          <input type="hidden" name="paymentType" value="{{ 'Direct' if order else 'Balance' }}">
           <div class="d-flex gap-2 justify-content-center mt-3">
             <button type="submit" class="btn btn-primary">Submit</button>
           </div>

@@ -48,6 +48,7 @@ def process_payment():
     if payment_method == 'Credit':
         credit = {
             'payment_method': payment_method,
+            'paymentType': request.form.get('paymentType'),
             'cardNumber': request.form.get('cardNumber'),
             'cardExpiryDate': request.form.get('cardExpiryDate'),
             'cardHolder': request.form.get('cardHolder'),
@@ -60,6 +61,7 @@ def process_payment():
     elif payment_method == 'Debit':
         debit = {
             'payment_method': payment_method,
+            'paymentType': request.form.get('paymentType'),
             'bankName': request.form.get('bankName'),
             'debitCardNumber': request.form.get('debitCardNumber'),
             'paymentAmount': request.form.get('paymentAmount'),

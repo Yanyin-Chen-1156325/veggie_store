@@ -27,6 +27,7 @@ class PaymentService:
                     cardType=kwargs.get('cardType'),
                     cardCVV=kwargs.get('cardCVV'),
                     paymentAmount=kwargs.get('paymentAmount'),
+                    paymentType=kwargs.get('paymentType'),
                     customer_id=kwargs.get('customer_id')
                     )
             elif kwargs.get('payment_method') == 'Debit':
@@ -35,6 +36,7 @@ class PaymentService:
                     bankName=kwargs.get('bankName'),
                     debitCardNumber=kwargs.get('debitCardNumber'),
                     paymentAmount=kwargs.get('paymentAmount'),
+                    paymentType=kwargs.get('paymentType'),
                     customer_id=kwargs.get('customer_id')
                     )
             else:

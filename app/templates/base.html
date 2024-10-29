@@ -76,8 +76,8 @@
               {% endif %}
             {% endif %}
           </ul>
-          <!-- Right side -->
           {% if current_user.is_authenticated %}
+          {% if current_user.type != 'staff' %}
           <ul class="navbar-nav me-4">
             <li class="nav-item">
               <a href="{{ url_for('order.view_list') }}" class="btn btn-success">Shopping List</a>
@@ -85,7 +85,6 @@
           </ul>
           {% endif %}
           <div class="d-flex">
-            {% if current_user.is_authenticated %}
               <!-- Welcome message -->
               <span class="me-3 text-white">Welcome, {{ current_user.username }}</span>
                 <!-- Logout -->
@@ -97,8 +96,8 @@
                 <form action="{{ url_for('auth.login') }}" method="GET" style="display: inline;">
                     <button type="submit" class="btn btn-outline-success">Login</button>
                 </form>
-            {% endif %}
           </div>
+          {% endif %}
         </div>
       </div>
     </nav>    

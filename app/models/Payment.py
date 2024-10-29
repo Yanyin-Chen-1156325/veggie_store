@@ -7,6 +7,7 @@ class Payment(db.Model):
     paymentAmount = db.Column(db.Numeric(10, 2), nullable=False)
     paymentDate = db.Column(db.DateTime, default=db.func.now(), nullable=False)
     paymentID = db.Column(db.String(17), unique=True, nullable=False)
+    paymentType = db.Column(db.String(10), nullable=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.person_id'))
 
     __mapper_args__ = {
