@@ -96,7 +96,7 @@ class OrderService:
             result = daily_sales
         else:
             result={
-                'date': f"{start_date.strftime("%d-%m-%Y %H:%M:%S")} ~ {end_date.strftime("%d-%m-%Y %H:%M:%S")}",
+                'date': f"{start_date.strftime('%d-%m-%Y %H:%M:%S')} ~ {end_date.strftime('%d-%m-%Y %H:%M:%S')}",
                 'total_amount': float(daily_sales[0][0]) if daily_sales else 0,
                 'order_count': daily_sales[0][1] if  daily_sales else 0
             }
@@ -112,7 +112,7 @@ class OrderService:
             result = weekly_sales
         else:
             result={
-                'date': f"{start_date.strftime("%d-%m-%Y")} ~ {end_date.strftime("%d-%m-%Y")}",
+                'date': f"{start_date.strftime('%d-%m-%Y')} ~ {end_date.strftime('%d-%m-%Y')}",
                 'total_amount': float(weekly_sales[0][0]) if weekly_sales else 0,
                 'order_count': weekly_sales[0][1] if  weekly_sales else 0
             }
@@ -130,7 +130,7 @@ class OrderService:
             result = monthly_sales
         else:
             result={
-                'date': f"{start_date.strftime("%d-%m-%Y")} ~ {end_date.strftime("%d-%m-%Y")}",
+                'date': f"{start_date.strftime('%d-%m-%Y')} ~ {end_date.strftime('%d-%m-%Y')}",
                 'total_amount': float(monthly_sales[0][0]) if monthly_sales else 0,
                 'order_count': monthly_sales[0][1] if  monthly_sales else 0
             }
@@ -146,7 +146,7 @@ class OrderService:
             result = yearly_sales
         else:
             result={
-                'date': f"{start_date.strftime("%d-%m-%Y")} ~ {end_date.strftime("%d-%m-%Y")}",
+                'date': f"{start_date.strftime('%d-%m-%Y')} ~ {end_date.strftime('%d-%m-%Y')}",
                 'total_amount': float(yearly_sales[0][0]) if yearly_sales else 0,
                 'order_count': yearly_sales[0][1] if  yearly_sales else 0
             }
