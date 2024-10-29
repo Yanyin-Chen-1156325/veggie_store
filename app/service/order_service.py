@@ -122,8 +122,9 @@ class OrderService:
         """! Get daily sales.
         @return: Total amount and order count.
         """
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=6)
+        date = datetime.now().date()
+        start_date = datetime.combine(date, datetime.min.time())  # 00:00:00
+        end_date = datetime.combine(date, datetime.max.time())    # 23:59:59.999999
 
         daily_sales = self.order_repository.get_sales(start_date, end_date)
 
@@ -131,9 +132,9 @@ class OrderService:
             result = daily_sales
         else:
             result={
-                'date': f"{start_date.strftime('%d-%m-%Y %H:%M:%S')} ~ {end_date.strftime('%d-%m-%Y %H:%M:%S')}",
-                'total_amount': float(daily_sales[0][0]) if daily_sales else 0,
-                'order_count': daily_sales[0][1] if  daily_sales else 0
+                'date': f"{start_date.strftime('%d-%m-%Y')} ~ ",
+                'total_amount': float(daily_sales[0][0]) if daily_sales[0][0] else 0,
+                'order_count': daily_sales[0][1] if  daily_sales[0][1] else 0
             }
         return result
     
@@ -141,8 +142,13 @@ class OrderService:
         """! Get weekly sales.
         @return: Total amount and order count.
         """
-        end_date = datetime.now()
-        start_date = end_date - timedelta(weeks=1)
+        date = datetime.now().date()
+        # Monday for the current week
+        start_date = date - timedelta(days=date.weekday())
+        start_date = datetime.combine(start_date, datetime.min.time())
+        # Sunday for the current week
+        end_date = start_date + timedelta(days=6)
+        end_date = datetime.combine(end_date, datetime.max.time())
         
         weekly_sales = self.order_repository.get_sales(start_date, end_date)
         
@@ -151,8 +157,8 @@ class OrderService:
         else:
             result={
                 'date': f"{start_date.strftime('%d-%m-%Y')} ~ {end_date.strftime('%d-%m-%Y')}",
-                'total_amount': float(weekly_sales[0][0]) if weekly_sales else 0,
-                'order_count': weekly_sales[0][1] if  weekly_sales else 0
+                'total_amount': float(weekly_sales[0][0]) if weekly_sales[0][0] else 0,
+                'order_count': weekly_sales[0][1] if  weekly_sales[0][1] else 0
             }
         return result
     
@@ -160,10 +166,14 @@ class OrderService:
         """! Get monthly sales.
         @return: Total amount and order count.
         """
-        end_date = datetime.now()
-        first_day = end_date.replace(day=1)
-        last_month_last_day = first_day - timedelta(days=1)
-        start_date = last_month_last_day.replace(day=1)
+        today = datetime.now()
+        year = today.year
+        month = today.month
+        import calendar
+        # Get the last day of the month
+        _, last_day = calendar.monthrange(year, month)
+        start_date = datetime(year, month, 1)
+        end_date = datetime(year, month, last_day, 23, 59, 59, 999999)
         
         monthly_sales = self.order_repository.get_sales(start_date, end_date)
         
@@ -172,8 +182,8 @@ class OrderService:
         else:
             result={
                 'date': f"{start_date.strftime('%d-%m-%Y')} ~ {end_date.strftime('%d-%m-%Y')}",
-                'total_amount': float(monthly_sales[0][0]) if monthly_sales else 0,
-                'order_count': monthly_sales[0][1] if  monthly_sales else 0
+                'total_amount': float(monthly_sales[0][0]) if monthly_sales[0][0] else 0,
+                'order_count': monthly_sales[0][1] if  monthly_sales[0][1] else 0
             }
         return result
     
@@ -181,8 +191,9 @@ class OrderService:
         """! Get yearly sales.
         @return: Total amount and order count.
         """
-        end_date = datetime.now()
-        start_date = end_date - timedelta(days=365)
+        year = datetime.now().year
+        start_date = datetime(year, 1, 1)
+        end_date = datetime(year, 12, 31, 23, 59, 59, 999999)
 
         yearly_sales = self.order_repository.get_sales(start_date, end_date)
         
@@ -191,8 +202,8 @@ class OrderService:
         else:
             result={
                 'date': f"{start_date.strftime('%d-%m-%Y')} ~ {end_date.strftime('%d-%m-%Y')}",
-                'total_amount': float(yearly_sales[0][0]) if yearly_sales else 0,
-                'order_count': yearly_sales[0][1] if  yearly_sales else 0
+                'total_amount': float(yearly_sales[0][0]) if yearly_sales[0][0] else 0,
+                'order_count': yearly_sales[0][1] if  yearly_sales[0][1] else 0
             }
         return result
     

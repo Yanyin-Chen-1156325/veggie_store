@@ -116,6 +116,7 @@
                 <div class="card-body">
                     <div class="table-responsive">
                         <table class="table table-striped">
+                            {% if top_products %}
                             <thead>
                                 <tr>
                                     <th>Rank</th>
@@ -140,6 +141,11 @@
                                 </tr>
                                 {% endfor %}
                             </tbody>
+                            {% else %}
+                            <div class="bg-info bg-opacity-10 text-center p-3">
+                                No data. 
+                            </div>
+                            {% endif %}
                         </table>
                     </div>
                 </div>
