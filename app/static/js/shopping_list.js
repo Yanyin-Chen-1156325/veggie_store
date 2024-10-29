@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const totalPriceInput = document.getElementById('totalPriceInput');
     const discountElement = document.getElementById('discountAmount');
     const discountInput = document.getElementById('discountInput');
-    const paymentWarning = document.querySelector('.alert-warning');
+    const paymentWarning = document.querySelector('.bg-danger.bg-opacity-10');
     
     // Get values from data attributes
     const maxDistance = parseFloat(modal.dataset.maxDistance);
