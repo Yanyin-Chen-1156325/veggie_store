@@ -10,11 +10,18 @@ class PersonRepository:
         self.db_session = db_session
 
     def username_exists(self, username):
-        """! Check if a username already exists in the database."""
+        """! Check if a username already exists in the database.
+        @param username: Username.
+        @return: Person object if the username exists, None otherwise.
+        """
         return self.db_session.query(Person).filter_by(username=username).first()
     
     def get_user(self, id=None, selectType=None):
-        """! Get a user by ID or type or all users."""
+        """! Get a user by ID or type or all users.
+        @param id: User ID.
+        @param selectType: User type.
+        @return: User object or list of User objects.
+        """
         if id:
             return self.db_session.query(Person).get(id)     
         elif selectType:
@@ -23,7 +30,9 @@ class PersonRepository:
             return self.db_session.query(Person).all()
     
     def generate_staff_id(self):
-        """! Generate a unique employee ID for each staff member. starts with '000001', 6 digits long."""
+        """! Generate a unique employee ID for each staff member. starts with '000001', 6 digits long.
+        @return: A unique employee ID.
+        """
         max_id = self.db_session.query(db.func.max(Staff.staffID)).scalar()
         if max_id:
             next_id = int(max_id) + 1
@@ -32,7 +41,9 @@ class PersonRepository:
         return f"{next_id:06d}"
     
     def generate_customer_id(self):
-        """! Generate a unique customer ID for each customer. starts with '10000001', 8 digits long."""
+        """! Generate a unique customer ID for each customer. starts with '10000001', 8 digits long.
+        @return: A unique customer ID.
+        """
         max_id = self.db_session.query(db.func.max(Customer.custID)).scalar()
         if max_id:
             next_id = int(max_id) + 1
@@ -41,7 +52,10 @@ class PersonRepository:
         return str(next_id)
         
     def add_user(self, user):
-        """! Add a new user to the database."""
+        """! Add a new user to the database.
+        @param user: User object.
+        @return: User object or error message.
+        """
         try:
             self.db_session.add(user)
             self.db_session.commit()
@@ -52,7 +66,11 @@ class PersonRepository:
             raise e
         
     def update_user(self, user_id, updated_data):
-        """! Update a user's data."""
+        """! Update a user's data.
+        @param user_id: User ID.
+        @param updated_data: Updated data.
+        @return: User object or error message.
+        """
         try:
             user = self.db_session.query(Person).get(user_id)
             for key, value in updated_data.items():
@@ -66,7 +84,10 @@ class PersonRepository:
             raise e
         
     def delete_user(self, user_id):
-        """! Delete a user from the database."""
+        """! Delete a user from the database.
+        @param user_id: User ID.
+        @return: True if the user is deleted successfully, error message otherwise.
+        """
         try:
             user = self.db_session.query(Person).get(user_id)
             

@@ -10,7 +10,9 @@ class PaymentRepository:
         self.db_session = db_session
 
     def generate_payment_id(self):
-        """! Generate a unique payment ID for each payment. yyyyMMddHHmmSSfff, 17 digits long."""
+        """! Generate a unique payment ID for each payment. yyyyMMddHHmmSSfff, 17 digits long.
+        @return: A unique payment ID.
+        """
         try:
             db_time = db.session.query(
                 db.func.concat(
@@ -24,7 +26,11 @@ class PaymentRepository:
             return time_str[:14] + time_str[14:17]
         
     def get_payment(self, customer_id=None, id=None):
-        """! Get a payment by customer ID or ID or all payments."""
+        """! Get a payment by customer ID or ID or all payments.
+        @param customer_id: Customer ID.
+        @param id: Payment ID.
+        @return: Payment object or list of Payment objects.
+        """
         if customer_id:
             return self.db_session.query(Payment).filter(Payment.customer_id == customer_id).all()
         elif id:
@@ -33,7 +39,10 @@ class PaymentRepository:
             return self.db_session.query(Payment).all() 
     
     def create_payment(self, payment):
-        """! Create a payment."""
+        """! Create a payment.
+        @param payment: Payment object.
+        @return: Payment object or error message.
+        """
         try:
             self.db_session.add(payment)
             self.db_session.commit()

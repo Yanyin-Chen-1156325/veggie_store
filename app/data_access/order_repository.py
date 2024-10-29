@@ -13,7 +13,9 @@ class OrderRepository:
         self.db_session = db_session
 
     def generate_order_id(self):
-        """! Generate a unique order ID for each order. starts with '1000000001', 10 digits long."""
+        """! Generate a unique order ID for each order. starts with '1000000001', 10 digits long.
+        @return: A unique order ID.
+        """
         max_id = self.db_session.query(db.func.max(Order.orderNumber)).scalar()
         if max_id:
             next_id = int(max_id) + 1
@@ -22,12 +24,20 @@ class OrderRepository:
         return str(next_id)
     
     def generate_orderitem_id(self, order: Order, index):
-        """! Generate a unique order item ID for each order item. OrderID + 6 digitals serial number."""
+        """! Generate a unique order item ID for each order item. OrderID + 6 digitals serial number.
+        @param order: Order object.
+        @param index: Serial number of the order item.
+        @return: A unique order item ID.
+        """
         index_str = str(index).zfill(6)
         return order.orderNumber + index_str
     
     def get_Order(self, order_id=None, order_customer=None):
-        """! Get an order by ID or customer or all orders."""
+        """! Get an order by ID or customer or all orders.
+        @param order_id: Order ID.
+        @param order_customer: Customer ID.
+        @return: Order object or list of Order objects.
+        """
         if order_id:
             return self.db_session.query(Order).get(order_id)
         elif order_customer:
@@ -36,7 +46,10 @@ class OrderRepository:
             return self.db_session.query(Order).all()
     
     def place_order(self, order):
-        """! Place an order."""
+        """! Place an order.
+        @param order: Order object.
+        @return: Order object or error message.
+        """
         try:       
             self.db_session.add(order)
             self.db_session.commit()
@@ -45,7 +58,10 @@ class OrderRepository:
             return str(e)
 
     def create_orderitem(self, orderitem):
-        """! Create an order item."""
+        """! Create an order item.
+        @param orderitem: OrderItem object.
+        @return: OrderItem object or error message.
+        """
         try:       
             self.db_session.add(orderitem)
             self.db_session.commit()
@@ -54,7 +70,12 @@ class OrderRepository:
             return str(e)
     
     def update_order(self, order_id, status=None, payment=None):
-        """! Update an order's status or payment method."""
+        """! Update an order's status or payment method.
+        @param order_id: Order ID.
+        @param status: Order status.
+        @param payment: Payment method.
+        @return: Order object or error message.
+        """
         if status:
             order = self.db_session.query(Order).get(order_id)
             order.orderStatus = status
@@ -65,7 +86,11 @@ class OrderRepository:
         return order
     
     def update_orderitem_product(self, orderitem_id, product):
-        """! Update a conection between order item and product."""
+        """! Update a conection between order item and product.
+        @param orderitem_id: OrderItem ID.
+        @param product: Product object.
+        @return: OrderItem object or error message.
+        """
         try:
             orderitem = self.db_session.query(OrderItem).get(orderitem_id)
             orderitem.product = product
@@ -75,7 +100,11 @@ class OrderRepository:
             return str(e)
         
     def update_order_orderitem(self, order_id, orderitems):
-        """! Update a connection between order and order items."""
+        """! Update a connection between order and order items.
+        @param order_id: Order ID.
+        @param orderitems: List of OrderItem objects.
+        @return: Order object or error message.
+        """
         try:
             order = self.db_session.query(Order).get(order_id)
             order.orderitems = orderitems
@@ -85,7 +114,11 @@ class OrderRepository:
             return str(e)
         
     def get_sales(self, start_date, end_date):
-        """! Get the total sales and number of orders between two dates. Excludes cancelled orders."""
+        """! Get the total sales and number of orders between two dates. Excludes cancelled orders.
+        @param start_date: Start date.
+        @param end_date: End date.
+        @return: List of total sales and number of orders.
+        """
         try:
             sales = db.session.query(
                     db.func.sum(Order.totalAmount).label('total_amount'),
@@ -100,7 +133,10 @@ class OrderRepository:
             return str(e)
 
     def get_top_products(self, limit=5):
-        """! Get the top products by quantity sold."""
+        """! Get the top products by quantity sold.
+        @param limit: Number of products to return. Default is 5.
+        @return: List of top products.
+        """
         def create_weighted_query():
             """! Create a query for weighted veggies."""
             VeggieW = aliased(Veggie, flat=True)

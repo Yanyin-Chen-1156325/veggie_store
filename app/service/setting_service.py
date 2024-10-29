@@ -8,7 +8,12 @@ class SettingService:
         self.setting_repository = setting_repository
 
     def get_setting(self, **kwargs):
-        """! Get a setting by type or name or value or all settings. paser the setting value to a list of dictionary."""
+        """! Get a setting by type or name or value or all settings. paser the setting value to a list of dictionary.
+        @param type: Setting type.
+        @param name: Setting name.
+        @param value: Setting value.
+        @return: Setting object or list of Setting objects.
+        """
         rlt = self.setting_repository.get_setting(**kwargs)
         if kwargs.get('type') == 'Premadebox':
             premadeboxes = []
@@ -43,5 +48,11 @@ class SettingService:
             return rlt_sort
     
     def create_setting(self, **kwargs):
-        """! Create a setting."""
+        """! Create a setting.
+        @param type: Setting type.
+        @param name: Setting name.
+        @param value: Setting value.
+        @param description: Setting description.
+        @return: Setting object.
+        """
         return self.setting_repository.create_setting(**kwargs)

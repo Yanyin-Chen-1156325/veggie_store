@@ -10,23 +10,40 @@ class PersonService:
         self.person_repository = person_repository
 
     def generate_hashed_password(self, password):
-        """! Generate a hashed password."""
+        """! Generate a hashed password.
+        @param password: Password.
+        @return: Hashed password.
+        """
         return generate_password_hash(password)
     
     def verify_password(self, db_password, password):
-        """! Verify a password against a hashed password."""
+        """! Verify a password against a hashed password.
+        @param db_password: Hashed password.
+        @param password: Password.
+        @return: True if the password is correct, False otherwise.
+        """
         return check_password_hash(db_password, password)
 
     def username_exists(self, username):
-        """! Check if a username already exists in the database."""
+        """! Check if a username already exists in the database.
+        @param username: Username.
+        @return: Person object if the username exists, None otherwise.
+        """
         return self.person_repository.username_exists(username)
     
     def get_user(self, id=None, selectType=None):
-        """! Get a user by ID or type or all users."""
+        """! Get a user by ID or type or all users.
+        @param id: User ID.
+        @param selectType: User type.
+        @return: User object or list of User objects.
+        """
         return self.person_repository.get_user(id, selectType)
     
     def add_user(self, **kwargs):
-        """! Add a new user to the database."""
+        """! Add a new user to the database.
+        @param kwargs: User details.
+        @return: User object or error message.
+        """
         try:
             if self.username_exists(kwargs.get('username')):
                 return "Username already exists"
@@ -76,7 +93,10 @@ class PersonService:
             return str(e)
         
     def update_user(self, **kwargs):
-        """! Update a user's data."""
+        """! Update a user's data.
+        @param kwargs: User details.
+        @return: User object or error message.
+        """
         try:
             user = self.get_user(kwargs.get('id'))
             if user is None:
@@ -113,7 +133,10 @@ class PersonService:
             return str(e)
         
     def delete_user(self, user_id):
-        """! Delete a user from the database."""
+        """! Delete a user from the database.
+        @param user_id: User ID.
+        @return: True if delete user successfully or error message otherwise.
+        """
         try:
             user = self.get_user(user_id)
             if user is None:
@@ -124,7 +147,11 @@ class PersonService:
             return str(e)
     
     def update_balance(self, user_id, amount):
-        """! Update a user's balance which is the money user owning."""
+        """! Update a user's balance which is the money user owning.
+        @param user_id: User ID.
+        @param amount: Amount to update.
+        @return: User object or error message.
+        """
         try:
             user = self.get_user(user_id)
             if user is None:

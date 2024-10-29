@@ -9,7 +9,12 @@ class SettingRepository:
         self.db_session = db_session
 
     def get_setting(self, **kwargs):
-        """! Get a setting by type or name or value or all settings."""
+        """! Get a setting by type or name or value or all settings.
+        @param type: Setting type.
+        @param name: Setting name.
+        @param value: Setting value.
+        @return: Setting object or list of Setting objects.
+        """
         type = kwargs.get('type')
         name = kwargs.get('name')
         value = kwargs.get('value')
@@ -25,7 +30,13 @@ class SettingRepository:
         return query.all()
     
     def create_setting(self, **kwargs):
-        """! Create a setting."""
+        """! Create a setting.
+        @param type: Setting type.
+        @param name: Setting name.
+        @param value: Setting value.
+        @param description: Setting description.
+        @return: Setting object.
+        """
         setting = Setting(
             type=kwargs.get('type'),
             name=kwargs.get('name'),

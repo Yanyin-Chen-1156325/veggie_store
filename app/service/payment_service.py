@@ -9,14 +9,21 @@ class PaymentService:
         self.payment_repository = payment_repository
 
     def get_payment(self, customer_id=None, id=None):
-        """! Get a payment by customer ID or ID or all payments."""
+        """! Get a payment by customer ID or ID or all payments.
+        @param customer_id: Customer ID.
+        @param id: Payment ID.
+        @return: Payment object or list of Payment objects.
+        """
         try:
             return self.payment_repository.get_payment(customer_id, id)
         except Exception as e:
             return str(e)
 
     def create_payment(self, **kwargs):
-        """! Create a payment."""
+        """! Create a payment.
+        @param kwargs: Payment details.
+        @return: Payment object or error message.
+        """
         try:
             if kwargs.get('payment_method') == 'Credit':
                 payment = CreditCardPayment(

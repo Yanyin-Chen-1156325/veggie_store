@@ -9,19 +9,32 @@ class ProductService:
         self.product_repository = product_repository
 
     def veggie_exists(self, vegName):
-        """! Check if a veggie exists in the DB."""
+        """! Check if a veggie exists in the DB.
+        @param vegName: Veggie name.
+        @return: Veggie object if the veggie exists, None otherwise.
+        """
         return self.product_repository.veggie_exists(vegName)
     
     def premadebox_exists(self, boxSize):
-        """! Check if a premadebox exists in the DB."""
+        """! Check if a premadebox exists in the DB.
+        @param boxSize: Box size.
+        @return: PremadeBox object if the box exists, None otherwise.
+        """
         return self.product_repository.premadebox_exists(boxSize)
 
     def get_product(self, id=None, selectType=None):
-        """! Get a product by ID or type or all products."""
+        """! Get a product by ID or type or all products.
+        @param id: Product ID.
+        @param selectType: Product type.
+        @return: Product object or list of Product objects.
+        """
         return self.product_repository.get_product(id, selectType)
     
     def add_product(self, item):
-        """! create a product."""
+        """! create a product.
+        @param item: Product details.
+        @return: Product object or error message.
+        """
         try:
             if item['type'] == 'premadebox':
                 premadebox = PremadeBox(
@@ -48,7 +61,10 @@ class ProductService:
             return str(e)
         
     def create_veggie(self, item):
-        """! Create a veggie."""
+        """! Create a veggie.
+        @param item: Veggie details.
+        @return: Veggie object or error message.
+        """
         try:
             if item['type'] == 'weight':
                 product = WeightedVeggie(vegName=item['name'],
