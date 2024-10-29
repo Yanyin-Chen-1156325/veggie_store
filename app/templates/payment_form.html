@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Payment Details{% endblock %}
+{% block content %}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <!-- Header -->
+                <div class="card-header bg-primary text-white py-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="mb-0">Payment Details</h3>
+                        <span class="badge bg-white text-primary fs-6">ID: {{ payment.paymentID }}</span>
+                    </div>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Amount -->
+                    <div class="text-center mb-4 p-3 bg-light rounded">
+                        <div class="text-muted mb-1">Total Amount</div>
+                        <h2 class="display-4 mb-0 text-primary">${{ "%.2f"|format(payment.paymentAmount) }}</h2>
+                    </div>
+                    <!-- payment time -->
+                    <div class="text-center mb-4 p-3 bg-light rounded">
+                        <div class="text-muted mb-1">Payment Time</div>
+                        <h5 class="fw-bold mb-0">{{ payment.paymentDate.strftime('%d/%m/%Y %H:%M:%S') }}</h5>
+                    </div>
+                    <!-- Payment Method Details -->
+                    <div class="card mb-4 bg-light border-0">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Payment Method</h5>
+                            {% if payment.type == 'creditcardpayment' %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white rounded border h-100">
+                                        <div class="text-muted small mb-1">Card Holder</div>
+                                        <div class="fw-bold">{{ payment.cardHolder }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white rounded border h-100">
+                                        <div class="text-muted small mb-1">Card Type</div>
+                                        <div class="fw-bold">{{ payment.cardType }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white rounded border h-100">
+                                        <div class="text-muted small mb-1">Card Number</div>
+                                        <div class="fw-bold">
+                                            <span class="text-muted">****</span>
+                                            <span class="text-muted">****</span>
+                                            <span class="text-muted">****</span>
+                                            <span class="text-primary">{{ payment.cardNumber[-4:] }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white rounded border h-100">
+                                        <div class="text-muted small mb-1">Expiry Date</div>
+                                        <div class="fw-bold">{{ payment.cardExpiryDate }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% elif payment.type == 'debitcardpayment' %}
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white rounded border h-100">
+                                        <div class="text-muted small mb-1">Bank Name</div>
+                                        <div class="fw-bold">{{ payment.bankName }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white rounded border h-100">
+                                        <div class="text-muted small mb-1">Card Number</div>
+                                        <div class="fw-bold">
+                                            <span class="text-muted">****</span>
+                                            <span class="text-muted">****</span>
+                                            <span class="text-muted">****</span>
+                                            <span class="text-primary">{{ payment.debitCardNumber[-4:] }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Customer Information -->
+                    <div class="card bg-light border-0">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3">Customer Information</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white rounded border h-100">
+                                        <div class="text-muted small mb-1">Customer ID</div>
+                                        <div class="fw-bold">{{ payment.customer.person_id }}</div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="p-3 bg-white rounded border h-100">
+                                        <div class="text-muted small mb-1">Username</div>
+                                        <div class="fw-bold">{{ payment.customer.username }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                         <!-- Action Buttons -->
+                        <div class="d-flex justify-content-center gap-2">
+                            <a href="{{ url_for('payment.list_payments') }}" class="btn btn-secondary">Close</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

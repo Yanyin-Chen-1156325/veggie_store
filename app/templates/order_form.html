@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+{% block title %}Order Detail{% endblock %}
+{% block content %}
+
+<div class="container">
+    <h2 class="display-4 text-primary border-bottom pb-2 mb-4">Order Details</h2>
+
+    <!-- Order Information Card -->
+    <div class="card mb-4">
+        {% set status_order = ['create', 'pending', 'accepted', 'delivery', 'pickup', 'completed', 'cancelled'] %}
+        {% set current_index = status_order.index(order.orderStatus) if order.orderStatus in status_order else 0 %}
+        {% set is_cancelled = order.orderStatus == 'cancelled' %}
+        <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="mb-0">Order</h3>
+              <span class="badge bg-white text-primary fs-6">ID: {{ order.orderNumber }}</span>
+            </div>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4 class="mb-3">Customer Information</h4>
+                    <p><strong>Customer Name:</strong> {{ order.orderCustomer }}</p>
+                    <p><strong>Order Date:</strong> {{ order.orderDate.strftime('%d/%m/%Y %H:%M:%S') }}</p>
+                    <p><strong>Status:</strong> 
+                        <span class="badge {% if order.orderStatus == 'pending' %}bg-warning
+                                     {% elif order.orderStatus == 'accepted' %}bg-info
+                                     {% elif order.orderStatus == 'delivery' %}bg-primary
+                                     {% elif order.orderStatus == 'completed' %}bg-success
+                                     {% elif order.orderStatus == 'cancelled' %}bg-danger
+                                     {% elif order.orderStatus == 'pick up' %}bg-secondary{% endif %}">
+                            {{ order.orderStatus }}
+                        </span>
+                    </p>
+                </div>
+                <div class="col-md-6">
+                    <h4 class="mb-3">Delivery & Payment Details</h4>
+                    <p><strong>Delivery Method:</strong> {{ order.deliveryMethod }}</p>
+                    {% if order.deliveryMethod == 'delivery' %}
+                        <p><strong>Delivery Distance:</strong> {{ order.deliveryDistance }} km</p>
+                    {% endif %}
+                    <p><strong>Payment Method:</strong> {{ order.paymentMethod }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Items Table -->
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h3 class="card-title mb-0">Order Items</h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Item Number</th>
+                    <th>Product Type</th>
+                    <th>Details</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in order.orderitems %}
+                  <tr>
+                    <td>{{ item.itemNumber }}</td>
+                    <td>
+                        {% if item.product.type == 'premadebox' %}
+                            <span>Premadebox</span>
+                        {% elif item.product.type == 'weightedveggie' %}
+                            <span>Weight</span>
+                        {% elif item.product.type == 'packveggie' %}
+                            <span>Pack</span>
+                        {% elif item.product.type == 'unitpriceveggie' %}
+                            <span>Unit</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                      {% if item.product.type == 'premadebox' %}
+                        <div class="mb-2">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                      <th class="w-50">Box Size</th>
+                                      <th class="w-50">Number of Boxes</th>
+                                    </tr>
+                                </thead>
+                                  <td>{{ item.product.boxSize }}</td>
+                                  <td>{{ item.product.numOfBoxes }}</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <!-- veggie in box -->
+                        <div class="ms-3">
+                          <strong>Box Contents:</strong>
+                          <table class="table table-striped table-hover">
+                            <thead>
+                                <tr>
+                                  <th  class="w-40">Item</th>
+                                  <th  class="w-30">Quantity</th>
+                                  <th  class="w-30">Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for veggie in item.product.veggies %}
+                                  <tr>
+                                    <td>{{ veggie.vegName }}</td>
+                                    <td>{% if veggie.type == 'weightedveggie' %}
+                                        {{ veggie.weight }} kg
+                                        {% elif veggie.type == 'packveggie' %}
+                                        {{ veggie.numOfPack }} pack
+                                        {% else %}
+                                        {{ veggie.quantity }} unit
+                                        {% endif %}
+                                    </td>
+                                    <td>$
+                                        {% if veggie.type == 'weightedveggie' %}
+                                        {{ veggie.pricePerKilo }}
+                                        {% elif veggie.type == 'packveggie' %}
+                                        {{ veggie.pricePerPack }}
+                                        {% else %}
+                                        {{ veggie.pricePerUnit }}
+                                        {% endif %}
+                                    </td>
+                                  </tr>
+                                {% endfor %}
+                            </tbody>
+                          </table>
+                        </div>
+                      {% elif item.product.type == 'weightedveggie' %}
+                      <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                              <th class="w-50">Item</th>
+                              <th class="w-50">Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>{{ item.product.vegName }}</td>
+                            <td>{{ item.product.weight }} kg</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      {% elif item.product.type == 'packveggie' %}
+                      <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                              <th class="w-50">Item</th>
+                              <th class="w-50">Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ item.product.vegName }}</td>
+                                <td>{{ item.product.numOfPack }} pack</td>
+                            </tr>
+                        </tbody>
+                      </table>
+                      {% elif item.product.type == 'unitpriceveggie' %}
+                      <table class="table table-striped table-hover">
+                        <thead>
+                            <tr>
+                              <th class="w-50">Item</th>
+                              <th class="w-50">Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ item.product.vegName }}</td>
+                                <td>{{ item.product.quantity }} unit</td>
+                            </tr>
+                        </tbody>
+                      </table>
+                      {% endif %}
+                    </td>
+                    <td>
+                      {% if item.product.type == 'premadebox' %}
+                        ${{ item.product.boxPrice }}
+                      {% elif item.product.type == 'weightedveggie' %}
+                        ${{ (item.product.weight * item.product.pricePerKilo) | round(2) }}
+                      {% elif item.product.type == 'packveggie' %}
+                        ${{ (item.product.numOfPack * item.product.pricePerPack) | round(2) }}
+                      {% elif item.product.type == 'unitpriceveggie' %}
+                        ${{ (item.product.quantity * item.product.pricePerUnit) | round(2) }}
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                      <td colspan="3" class="text-end">Order Price:</td>
+                      <td class="text-end fw-bold">${{ order.orderPrice }}</td>
+                    </tr>
+                    {% if order.deliveryMethod == 'delivery' %}
+                    <tr>
+                      <td colspan="3" class="text-end">Delivery Fee:</td>
+                      <td class="text-end text-danger">
+                        +${{ order.deliveryFee }}
+                      </td>
+                    </tr>
+                    {% endif %}
+                    {% if order.discountAmount and order.discountAmount > 0 %}
+                    <tr>
+                      <td colspan="3" class="text-end">Discount:</td>
+                      <td class="text-end text-danger">
+                        -${{ order.discountAmount }}
+                      </td>
+                    </tr>
+                    {% endif %}
+                    <tr class="table-primary">
+                      <td colspan="3" class="text-end"><strong>Total Price:</strong></td>
+                      <td class="text-end fw-bold text-primary  fs-5">
+                        <strong>${{ order.totalAmount }}</strong>
+                      </td>
+                    </tr>
+                  </tfoot>
+              </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="mt-4 text-end">
+        {% if current_user.type == 'staff' %}
+        <!-- staff -->
+          {% if order.orderStatus == 'pending' %}
+          <form action="{{ url_for('order.update_status')}}" method="POST" style="display: inline;">
+              <input type="hidden" name="id" value="{{ order.id }}">
+              <input type="hidden" name="action" value="accept">
+              <button type="submit" class="btn btn-sm btn-primary" onclick="return confirm('Are you sure you want to accept this order [{{ order.orderNumber }}]?')">Accept</button>
+          </form>
+          {% elif order.orderStatus == 'accepted' %}
+            {% if order.deliveryMethod == 'delivery' %}
+            <form action="{{ url_for('order.update_status')}}" method="POST" style="display: inline;">
+                <input type="hidden" name="id" value="{{ order.id }}">
+                <input type="hidden" name="action" value="delivery">
+                <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to delivery this order [{{ order.orderNumber }}]?')">Delivery</button>
+            </form>
+            {% else %}
+            <form action="{{ url_for('order.update_status')}}" method="POST" style="display: inline;">
+                <input type="hidden" name="id" value="{{ order.id }}">
+                <input type="hidden" name="action" value="pickup">
+                <button type="submit" class="btn btn-sm btn-warning" onclick="return confirm('Are you sure you want to ready for pick up with this order [{{ order.orderNumber }}]?')">Pick Up</button>
+            </form>
+            {% endif %}
+          {% elif order.orderStatus == 'delivery' or order.orderStatus == 'pick up'%}
+          <form action="{{ url_for('order.update_status')}}" method="POST" style="display: inline;">
+              <input type="hidden" name="id" value="{{ order.id }}">
+              <input type="hidden" name="action" value="complete">
+              <button type="submit" class="btn btn-sm btn-success" onclick="return confirm('Are you sure you want to complete this order [{{ order.orderNumber }}]?')">Completed</button>
+          </form>
+          {% endif %}
+          {% if order.orderStatus is not in ['completed', 'cancelled'] %}
+          <form action="{{ url_for('order.update_status')}}" method="POST" style="display: inline;">
+            <input type="hidden" name="id" value="{{ order.id }}">
+            <input type="hidden" name="action" value="cancel">
+            <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this order [{{ order.orderNumber }}]?')">Cancel</button>
+          </form> 
+          {% endif %}
+        {% else %}
+        <!-- customer -->
+          {% if order.orderStatus == 'pending' %}
+          <form action="{{ url_for('order.update_status')}}" method="POST" style="display: inline;">
+              <input type="hidden" name="id" value="{{ order.id }}">
+              <input type="hidden" name="action" value="cancel">
+              <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to cancel this order [{{ order.orderNumber }}]?')">Cancel</button>
+          </form> 
+          {% endif %}
+        {% endif %}
+          <a href="{{ url_for('order.list_orders') }}" class="btn btn-sm btn-secondary">Close</a>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Order List{% endblock %}
+
+{% block content %}
+<h2 class="display-4 text-primary border-bottom pb-2 mb-4 mt-4">Order List</h2>
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+        <th>Order Number</th>
+        <th>Customer</th>
+        <th>Total Amount</th>
+        <th>Delivery</th>
+        <th>Payment</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Action</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% if orders %}
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.orderNumber }}</td>
+            <td>{{ order.orderCustomer }}</td>
+            <td>{{ order.totalAmount }}</td>
+            <td>{{ order.deliveryMethod }}</td>
+            <td>{{ order.paymentMethod if order.paymentMethod == 'Balance' else order.paymentMethod + ' Card' }}</td>
+            <td><span class="badge {% if order.orderStatus == 'pending' %}bg-warning
+                {% elif order.orderStatus == 'accepted' %}bg-info
+                {% elif order.orderStatus == 'delivery' %}bg-primary
+                {% elif order.orderStatus == 'completed' %}bg-success
+                {% elif order.orderStatus == 'cancelled' %}bg-danger
+                {% elif order.orderStatus == 'pick up' %}bg-secondary{% endif %}">
+                {{ order.orderStatus }}
+                </span>
+            </td>
+            <td>{{ order.orderDate.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+            <td>
+                <a href="{{ url_for('order.view_order', id=order.id) }}" class="btn btn-sm btn-info">View</a>
+            </td>
+        </tr>
+        {% endfor %}
+        {% endif %}
+    </tbody>
+</table>
+{% endblock %}

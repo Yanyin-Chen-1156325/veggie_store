@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+<!-- Three modes: add/edit/view -->
+{% block title %}
+    {% if mode == 'view' %}
+        View User
+    {% elif mode == 'add' %}
+        Add User
+    {% else %}
+        Edit User
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<!-- Form with validation.-->
+<h2 class="text-center mt-4">
+    {% if mode == 'view' %}
+        View User
+    {% elif mode == 'add' %}
+        Add User
+    {% else %}
+        Edit User
+    {% endif %}
+</h2>
+    <div class="d-flex justify-content-center align-items-top">
+        <form class="row g-3 needs-validation" method="POST" 
+            action="{% if mode == 'add' %}
+                        {{ url_for('person.create_person') }}
+                    {% elif mode == 'edit' %}
+                        {{ url_for('person.edit_person', id=person.id) }}
+                    {% else %}
+                    {% endif %}"
+            novalidate style="width: 400px;">
+            {% if mode == 'edit' %}
+                <!-- Hidden fields for edit mode, send data to backend -->
+                <input type="hidden" name="id" value="{{ person.id }}">
+                <input type="hidden" name="username" value="{{ person.username }}">
+                <input type="hidden" name="custBalance" value="{{ person.custBalance }}">
+            {% endif %}
+            <!-- Username -->
+            <div class="col-md-12">
+                <label for="Username" class="form-label">Username:</label>
+                <input type="text" class="form-control" id="username" name="username" 
+                    value="{{person.username if person else ''}}" 
+                    pattern="^[a-zA-Z0-9_]+$" 
+                    {% if mode in ['view', 'edit'] %} disabled {% else %} required {% endif %}>
+                <div class="invalid-feedback">
+                    Only letters, numbers, and underscore are allowed.
+                </div>
+            </div>
+            <!-- Password, cannot be seen as it has been hashed, can only be changed -->
+            {% if mode != 'view' %}
+            <div class="col-md-12 mb-3">
+                <label for="password" class="form-label">Password:(6 - 10 digitals)</label>
+                {% if mode == 'edit' %} <label for="password_description" class="form-label text-primary">Keep blank if you don't want to change</label>{% endif %}
+                <input type="password" class="form-control" id="password" name="password" value="{{person.password if person else ''}}"
+                {% if mode == 'add' %} required pattern="[A-Za-z0-9@$!%*?&]{6,10}$" {% endif %}>
+                <div class="invalid-feedback">Password can only contain letters, numbers, and these special characters: @$!%*?&</div>
+            </div>
+            {% endif %}
+            <!-- First Name -->
+            <div class="col-md-12">
+                <label for="FirstName" class="form-label">First Name:</label>
+                <input type="text" class="form-control" id="firstName" name="firstName" value="{{person.firstName if person else ''}}"
+                    pattern="^[a-zA-Z]+$"
+                    {% if mode == 'view' %} disabled {% else %} required {% endif %}>
+                <div class="invalid-feedback">
+                    Only letters are allowed.
+                </div>
+            </div>
+            <!-- Last Name -->
+            <div class="col-md-12">
+                <label for="LastName" class="form-label">Last Name:</label>
+                <input type="text" class="form-control" id="lastName" name="lastName" value="{{person.lastName if person else ''}}"
+                    pattern="^[a-zA-Z]+$"
+                    {% if mode == 'view' %} disabled {% else %} required {% endif %}>
+                <div class="invalid-feedback">
+                    Only letters are allowed.
+                </div>
+            </div>
+            <!-- Type -->
+            <div class="col-md-12">
+                <label for="type" class="form-label">Type:</label>
+                {% if mode == 'view' or mode == 'edit' %}
+                <input type="text" class="form-control" id="type" name="type" value = "{{person.type if person else ''}}" disabled>
+                {% else %}
+                <select class="form-select" id="type" name="type" required>
+                    {% if mode == 'add' %}
+                        <option value="" selected disabled>Choose...</option>
+                    {% endif %}
+                    {% for type in person_type %}
+                        <option value="{{ type.value }}" 
+                            {% if (mode == 'edit') and person.type == type.value %}selected{% endif %}>
+                            {{ type.value }}
+                        </option>
+                    {% endfor %}
+                </select>
+                {% endif %}
+                <div class="invalid-feedback">
+                  Please select a Type.
+                </div>
+            </div>
+            <!-- Department for staff -->
+            <div id="departmentField" class="mb-3" {% if not person or person.type != 'staff' %} style="display: none;" {% endif %}>
+                <label for="deptName" class="form-label">Department:</label>
+                <input type="text" class="form-control" id="deptName" name="deptName" 
+                    value="{{ person.deptName if person else '' }}"
+                    {% if mode == 'view' %} disabled {% endif %}>
+                <div class="invalid-feedback">Please input a department.</div>
+            </div>
+            <!-- Join Date for staff -->
+            {% if person and person.type == 'staff' %}
+            <div id="joindateField" class="mb-3">
+                {% if mode == 'view' %}
+                <label class="form-label">Join Date:</label>
+                    <input type="text" class="form-control" value="{{ person.dateJoined.strftime('%d/%m/%Y %H:%M:%S') }}" disabled>
+                {% endif %}
+            </div>
+            {% endif %}
+            <!-- Address for customer -->
+            <div class="mb-3" id="addressField" {% if not person or person.type == 'staff' %} style="display: none;" {% endif %}>
+                <label for="address" class="form-label">Address:</label>
+                <input type="text" class="form-control" id="custAddress" name="custAddress" 
+                    value=" {{ person.custAddress if person else '' }}""
+                   {% if mode == 'view' %} disabled {% endif %}>
+            </div>
+            <!-- Max Owing for customer -->
+            <div class="mb-3" id="maxOwingField" {% if not person or person.type == 'staff' %} style="display: none;" {% endif %}>
+                {% if person and person.type == 'privatecustomer' %}
+                <label for="maxowing" class="form-label">Max Owing:</label>
+                {% else %}
+                <label for="maxowing" class="form-label">Credit Limit:</label>
+                {% endif %}
+                <input type="number" class="form-control" id="maxOwing" name="maxOwing" min="0.0" step="0.01" 
+                    data-private-maxOwing="{{ privateCust_maxOwing }}"
+                    {% if mode == 'add' %}
+                        value="{{ privateCust_maxOwing }}"
+                    {% else %}
+                        value="{{ person.maxOwing if person else '' }}"
+                    {% endif %}    
+                    {% if mode == 'view' or (mode == 'edit' and person.type == 'privatecustomer')  %} 
+                        disabled 
+                    {% endif %}>
+                <div class="invalid-feedback">
+                    Please input a value of max owing.
+                </div>
+            </div>
+            <!-- Discount for corporate customer -->
+            <div class="mb-3" id="discountField" {% if not person or person.type in ['staff', 'privatecustomer'] %} style="display: none;" {% endif %}>
+                <label for="discount" class="form-label">Discount:</label>
+                <input type="number" class="form-control" id="discount" name="discount" min="0.0" step="0.01" max = '0.99' 
+                data-corporate-discount="{{ corporateCust_discount }}"
+                {% if mode == 'add' %}    
+                    value ="{{corporateCust_discount}}"
+                {% else %}               
+                    value="{{ person.discount if person else '' }}"
+                {% endif %}
+                    {% if mode == 'view' %} disabled {% endif %}>
+                <div class="invalid-feedback">
+                    Please input a value below 1.
+                </div>
+            </div>
+            <!-- Min Balance for corporate customer -->
+            <div class="mb-3" id="minbalanceField" {% if not person or person.type in ['staff', 'privatecustomer'] %} style="display: none;" {% endif %}>
+                <label for="minbalance" class="form-label">Min Balance for order:</label>
+                <input type="number" class="form-control" id="minBalance" name="minBalance" min="0" step="1"
+                data-corporate-min-balance="{{ corporateCust_minbalance }}"
+                {% if mode == 'add' %}    
+                    value ="{{corporateCust_minbalance}}"
+                {% else %}               
+                    value="{{ person.minBalance if person else '' }}"
+                {% endif %}
+                    {% if mode == 'view' %} disabled {% endif %}>
+                <div class="invalid-feedback">
+                    Please input a positive integer.
+                </div>
+            </div>
+            <!-- Balance for customer, only view mode can see -->
+            <div class="mb-3" id="custBalanceField" {% if not person or person.type == 'staff' or mode == 'edit' %} style="display: none;" {% endif %}>
+                <label for="custBalance" class="form-label">Balance:</label>
+                <input type="number" class="form-control" id="custBalance" name="custBalance" value="{{ person.custBalance if person else '' }}" disabled>
+            </div>
+            
+            <!-- Button, return in view mode, send data in add/edit mode -->
+            {% if mode == 'view' %}
+                {% if current_user.type == 'staff' %}
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{{ url_for('person.list_persons', select_type='staff') }}" class="btn btn-secondary">Close</a>
+                </div>
+                {% endif %}
+            {% else %}
+                <button type="submit" class="btn btn-primary">Save</button>
+            {% endif %}
+            
+        </form>
+    </div>
+{% endblock %}

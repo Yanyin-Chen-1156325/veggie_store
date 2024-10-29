@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% block title %}Sales Report{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 text-primary">Daily Report</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="w-50">Date</th>
+                                    <th class="W-25">Sales</th>
+                                    <th class="W-25">Order Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="w-50">{{ daily_sales.date }}</td>
+                                    <td class="W-25">${{ "%.2f"|format(daily_sales.total_amount) }}</td>
+                                    <td class="W-25">{{ daily_sales.order_count }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 text-primary">Weekly Report</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="w-50">Date</th>
+                                    <th class="W-25">Sales</th>
+                                    <th class="W-25">Order Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="w-50">{{ weekly_sales.date }}</td>
+                                    <td class="W-25">${{ "%.2f"|format(weekly_sales.total_amount) }}</td>
+                                    <td class="W-25">{{ weekly_sales.order_count }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 text-primary">Monthly Report</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="w-50">Date</th>
+                                    <th class="W-25">Sales</th>
+                                    <th class="W-25">Order Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="w-50">{{ monthly_sales.date }}</td>
+                                    <td class="W-25">${{ "%.2f"|format(monthly_sales.total_amount) }}</td>
+                                    <td class="W-25">{{ monthly_sales.order_count }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 text-primary">Yearly Report</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="w-50">Date</th>
+                                    <th class="W-25">Sales</th>
+                                    <th class="W-25">Order Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="w-50">{{ yearly_sales.date }}</td>
+                                    <td class="W-25">${{ "%.2f"|format(yearly_sales.total_amount) }}</td>
+                                    <td class="W-25">{{ yearly_sales.order_count }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h5 class="card-title mb-0 text-danger">Top Popular Product</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Product Name</th>
+                                    <th>Type</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in top_products %}
+                                <tr>
+                                    <td>
+                                    {% if loop.index == 1 %}
+                                        <span class="badge bg-warning">1</span>
+                                    {% else %}
+                                        {{ loop.index }}
+                                    {% endif %}
+                                    </td>
+                                    <td>{{ product.name }}</td>
+                                    <td>{{ product.type }}</td>
+                                    <td>{{ product.quantity }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

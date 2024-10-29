@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+{% block title %}Payment Details{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Payment Details</h3>
+            </div>
+            <div class="card-body">
+                <!-- Payment Basic Information -->
+                <div class="mb-4">
+                    <h4 class="border-bottom pb-2">Basic Information</h4>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Payment ID:</strong>
+                                <span class="ms-2">{{ payment.paymentID }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Date:</strong>
+                                <span class="ms-2">{{ payment.paymentDate.strftime('%d/%m/%Y %H:%M:%S') }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Amount:</strong>
+                                <span class="ms-2">${{ payment.paymentAmount }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Payment Type:</strong>
+                                <span class="ms-2">{{ payment.type|title }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Details -->
+                <div class="mb-4">
+                    <h4 class="border-bottom pb-2">Payment Method Details</h4>
+                    {% if payment.type == 'creditcardpayment' %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Card Holder:</strong>
+                                <span class="ms-2">{{ payment.cardHolder }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Card Type:</strong>
+                                <span class="ms-2">{{ payment.cardType }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Card Number:</strong>
+                                <span class="ms-2">**** **** **** {{ payment.cardNumber[-4:] }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Expiry Date:</strong>
+                                <span class="ms-2">{{ payment.cardExpiryDate }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    {% elif payment.type == 'debitcardpayment' %}
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Bank Name:</strong>
+                                <span class="ms-2">{{ payment.bankName }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Card Number:</strong>
+                                <span class="ms-2">**** **** **** {{ payment.debitCardNumber[-4:] }}</span>
+                            </p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Customer Information -->
+                <div class="mb-4">
+                    <h4 class="border-bottom pb-2">Customer Information</h4>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Customer ID:</strong>
+                                <span class="ms-2">{{ payment.customer.person_id }}</span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong>Username:</strong>
+                                <span class="ms-2">{{ payment.customer.username }}</span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{{ url_for('payment.list_payments') }}" class="btn btn-secondary">Close</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

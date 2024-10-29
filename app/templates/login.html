@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<h2 class="text-center">Login</h2>
+    <div class="d-flex justify-content-center align-items-top">
+        <form id ="loginForm" class="row g-3 needs-validation" method="POST" action="{{ url_for('auth.login') }}" novalidate>
+            <!-- Username -->
+            <div class="col-md-12">
+                <label for="Username" class="form-label">Username:</label>
+                <input type="text" class="form-control" id="username" name="username" value={{username}} required
+                    pattern="^[a-zA-Z0-9_]+$">
+                <div class="invalid-feedback">
+                    Only letters, numbers, and underscore are allowed.
+                </div>
+            </div>
+            <!-- Password -->
+            <div class="col-md-12">
+                <label for="password" class="form-label">Password:</label>
+                <input type="password" class="form-control" id="password" name="password" value={{password}} required
+                    pattern="^[A-Za-z\d@$!%*?&]+$">
+                    <div class="invalid-feedback">
+                        Password can only contain letters, numbers, and these special characters: @$!%*?&
+                    </div>
+            </div>
+            <div>
+                <input type="submit" value="Login">
+            </div>
+        </form>
+        
+    </div>
+    <p class="text-center">username: staff/private/corporate</p>
+    <p class="text-center">password: 123456</p>
+{% endblock %}
+        

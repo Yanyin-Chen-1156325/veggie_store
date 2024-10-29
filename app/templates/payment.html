@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% block title %}Payment{% endblock %}
+{% block content %}
+
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card">
+      <div class="card-header bg-primary text-white">
+        <h3 class="mb-0">Payment Information</h3>
+      </div>
+
+      <div class="card-body">
+        <form id="paymentForm" action="{{ url_for('payment.process_payment') }}" method="POST" class="needs-validation" novalidate>
+          <input type="hidden" name="order_id" value="{{ order.id if order else '' }}">
+          
+          <div class="mb-4">
+            <label class="form-label">Select Payment Method</label>
+            <div class="d-flex gap-3">
+              <div class="form-check">
+                <input type="radio" class="form-check-input" id="creditCard" name="payment_method" value="Credit" checked>
+                <label class="form-check-label" for="creditCard">Credit Card</label>
+              </div>
+
+              <div class="form-check">
+                <input type="radio" class="form-check-input" id="debitCard" name="payment_method" value="Debit">
+                <label class="form-check-label" for="debitCard">Debit Card</label>
+              </div>
+            </div>
+          </div>
+
+          <div id="creditCardForm">
+            <div class="mb-3">
+              <label class="form-label">Card Number</label>
+              <input type="text" class="form-control" name="cardNumber" maxlength="16" pattern="\d{16}" required>
+              <div class="invalid-feedback">
+                Please enter a valid 16-digit card number
+              </div>
+            </div>
+
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label class="form-label">Expiry Date</label>
+                <input type="text" class="form-control" name="cardExpiryDate" placeholder="MM/YYYY" required>
+                <div class="invalid-feedback">
+                  Please enter a valid expiry date in the format MM/YYYY
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label class="form-label">CVV</label>
+                <input type="text" class="form-control" name="cardCVV" maxlength="3" pattern="\d{3}" required>
+                <div class="invalid-feedback">
+                  Please enter a valid 3-digit number
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Card Holder Name</label>
+              <input type="text" class="form-control" name="cardHolder" required>
+              <div class="invalid-feedback">
+                Please enter a holder name.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Card Type</label>
+              <select class="form-select" name="cardType" required>
+                <option value="" selected disabled>Select card type</option>
+                <option value="Visa">Visa</option>
+                <option value="Mastercard">Mastercard</option>
+                <option value="American Express">American Express</option>
+              </select>
+              <div class="invalid-feedback">
+                Please choose a card type.
+              </div>
+            </div>
+          </div>
+
+          <div id="debitCardForm" style="display: none;">
+            <div class="mb-3">
+              <label class="form-label">Bank Name</label>
+              <input type="text" class="form-control" name="bankName" pattern="[A-Za-z0-9\s_]+$">
+              <div class="invalid-feedback">
+                Only letters, numbers, space and underscore are allowed.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">Debit Card Number</label>
+              <input type="text" class="form-control" name="debitCardNumber" maxlength="16" pattern="\d{16}">
+              <div class="invalid-feedback">
+                Please enter a valid 16-digit number
+              </div>
+            </div>
+          </div>
+          {% if order %}
+          <div class="card mb-3">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">Order Summary</h5>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-2">
+                <span>Order Total:</span>
+                  <span class="fw-bold">{{ order.totalAmount }}</span>
+                  
+              </div>
+            </div>
+          </div>
+          {% else %}
+          <div class="card mb-3">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">Customer Information</h5>
+            </div>
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-2">
+                <span>Customer Balance:</span>
+                <span class="fw-bold">{{ current_user.custBalance }}</span>
+                <span>Pay Amount:</span>
+                <div class="input-group" style="max-width: 200px">
+                  <input type="number" 
+                          class="form-control"
+                          name="paymentAmount"
+                          step="0.01"
+                          min="0.01"
+                          max="{{ current_user.custBalance }}"
+                          value = "{{ current_user.custBalance }}"
+                          required
+                          oninput="validateAmount(this)">
+                  <div class="invalid-feedback">
+                    Amount cannot exceed your balance of {{ current_user.custBalance }}
+                  </div>
+                  </div>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+          <input type="hidden" name="paymentAmount" value="{{ order.totalAmount if order else current_user.custBalance }}">
+          <div class="d-flex gap-2 justify-content-center mt-3">
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
