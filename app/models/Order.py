@@ -24,6 +24,7 @@ class Order(db.Model):
     discountAmount = db.Column(db.Numeric(10, 2), nullable=True)
     totalAmount = db.Column(db.Numeric(10, 2), nullable=True)
     paymentMethod = db.Column(db.String(20), nullable=True) # credit card or debit card or balance
+    isPaid = db.Column(db.Boolean, default=False)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.person_id'))
     orderitems = db.relationship('OrderItem', backref='order') # one-to-many relationship
 

@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from flask_login import login_required, current_user
 from app.service import *
+from app.models.Order import OrderStatus
 from .. import db
 
 payment = Blueprint('payment', __name__)
@@ -70,14 +71,15 @@ def process_payment():
         rlt = paymentService.create_payment(**debit)
     else:
         rlt ='Invalid payment method'
+
     if isinstance(rlt, str) is not True:
-        session.pop('shopping_list', None)
         flash('Process payment success', 'success')
         if order_id == '':
             rlt = personService.update_balance(current_user.id, -rlt.paymentAmount)
             return redirect(url_for('payment.list_payments'))
         else:
-            rlt = orderService.update_order(order_id, None, payment_method) 
+            rlt = orderService.update_order(order_id, None, payment_method, True) 
+        
         if isinstance(rlt, str) is True:
             flash('Failed to update order payment or customer balance. ' + rlt, 'error')
     else:

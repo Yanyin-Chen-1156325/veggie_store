@@ -12,6 +12,7 @@
         <th>Customer</th>
         <th>Total Amount</th>
         <th>Delivery</th>
+        <th>Paid</th>
         <th>Payment</th>
         <th>Status</th>
         <th>Date</th>
@@ -25,6 +26,7 @@
             <td>{{ order.orderCustomer }}</td>
             <td>{{ order.totalAmount }}</td>
             <td>{{ order.deliveryMethod }}</td>
+            <td>{{ 'YES' if order.isPaid else 'NO'  }}</td>
             <td>{{ order.paymentMethod if order.paymentMethod == 'Balance' else order.paymentMethod }}</td>
             <td><span class="badge {% if order.orderStatus == 'pending' %}bg-warning
                 {% elif order.orderStatus == 'accepted' %}bg-info

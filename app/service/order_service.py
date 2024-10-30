@@ -54,7 +54,8 @@ class OrderService:
                 deliveryDistance=kwargs.get('deliveryDistance') if kwargs.get('deliveryDistance') else None,
                 deliveryFee=kwargs.get('deliveryFee') if kwargs.get('deliveryFee') else None,
                 discountAmount=kwargs.get('discountAmount') if kwargs.get('discountAmount') else None,
-                paymentMethod=kwargs.get('paymentMethod')
+                paymentMethod=kwargs.get('paymentMethod'),
+                isPaid=kwargs.get('isPaid')
                 )
             rlt1 = self.order_repository.place_order(order)
             if isinstance(rlt1, str) is True:
@@ -95,7 +96,7 @@ class OrderService:
         rlt = self.order_repository.update_orderitem_product(rlt1.itemNumber, rlt2)
         return rlt
         
-    def update_order(self, order_id, status=None, payment=None):
+    def update_order(self, order_id, status=None, payment=None, isPaid=False):
         """! Update an order's status or payment method.
         @param order_id: Order ID.
         @param status: Order status.
@@ -103,7 +104,7 @@ class OrderService:
         @return: Order object or error message.
         """
         try:
-            return self.order_repository.update_order(order_id, status, payment)
+            return self.order_repository.update_order(order_id, status, payment, isPaid)
         except Exception as e:
             return str(e)
         

@@ -118,7 +118,7 @@ def clear_list():
 @order.route('/order/place_order', methods=['POST'])
 @login_required
 def place_order():
-    """! Place an order."""
+    """! Place an order. update the customer's balance if the payment method is balance."""
     if 'shopping_list' not in session or not session['shopping_list']:
         flash('Your shopping list is empty', 'error')
         return redirect(url_for('product.view_list'))
@@ -133,7 +133,8 @@ def place_order():
         'paymentMethod': 'Balance' if request.form.get('paymentType') == 'later' else None,
         'deliveryFee': request.form.get('delivery_fee') if request.form.get('delivery_fee') else None,
         'discountAmount': request.form.get('discount_amount') if request.form.get('discount_amount') else None,
-        'items': session.get('shopping_list', [])
+        'items': session.get('shopping_list', []),
+        'isPaid': True if request.form.get('paymentType') == 'later' else False
     }
 
     if current_user.type == 'corporatecustomer':
@@ -144,11 +145,12 @@ def place_order():
     rlt = orderService.place_order(**order)
     if isinstance(rlt, str) is not True:
         if rlt.paymentMethod == 'Balance':
-            rlt = personService.update_balance(current_user.id, total_price)
+            personService.update_balance(current_user.id, total_price)
             session.pop('shopping_list', None)
             flash('Order placed successfully', 'success')
             return redirect(url_for('order.view_list'))
         else:
+            session.pop('shopping_list', None)
             flash('Order placed successfully', 'success')
             return redirect(url_for('payment.pay', order_id=rlt.id))
     else:
@@ -163,6 +165,10 @@ def list_orders():
         orders = orderService.get_Order()
     else:
         orders = orderService.get_Order(None, current_user.username)
+
+    for order in orders:
+        if order.isPaid == False and order.paymentMethod == None:
+            rlt = orderService.update_order(order.id, OrderStatus.CANCELLED.value)
     return render_template('order_list.html', orders=orders)
 
 @order.route('/order/view_order', methods=['GET'])

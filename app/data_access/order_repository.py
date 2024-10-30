@@ -69,19 +69,20 @@ class OrderRepository:
         except Exception as e:
             return str(e)
     
-    def update_order(self, order_id, status=None, payment=None):
+    def update_order(self, order_id, status=None, payment=None, isPaid=False):
         """! Update an order's status or payment method.
         @param order_id: Order ID.
         @param status: Order status.
         @param payment: Payment method.
         @return: Order object or error message.
         """
+        order = self.db_session.query(Order).get(order_id)
         if status:
-            order = self.db_session.query(Order).get(order_id)
             order.orderStatus = status
-        elif payment:
-            order = self.db_session.query(Order).get(order_id)
+        if payment:
             order.paymentMethod = payment
+        if isPaid:
+            order.isPaid = isPaid
         self.db_session.commit()
         return order
     
