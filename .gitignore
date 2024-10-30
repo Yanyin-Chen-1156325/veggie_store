@@ -1,6 +1,6 @@
 config.py
 config_prod.py
-notes.py
+notes.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
