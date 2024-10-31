@@ -1,8 +1,11 @@
 # veggie_store
  COMP642 final
-
+  
+Pythonanywhere:
+https://annchen1156325.pythonanywhere.com/
+  
 1. config.py: database information
--DB name: storedb, please create this database before run the app
+  -DB name: storedb, please create this database before run the app
 
 2. data: initial data, data will be added when app run
 

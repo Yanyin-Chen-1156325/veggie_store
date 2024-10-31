@@ -225,20 +225,15 @@ class OrderService:
                     product = item.product
                     
                     if isinstance(product, PremadeBox):
-                        for veggie in product.veggies:
-                            if isinstance(veggie, WeightedVeggie):
-                                self._add_veggie_stats(product_stats, veggie, veggie.weight, product.numOfBoxes)
-                            elif isinstance(veggie, PackVeggie):
-                                self._add_veggie_stats(product_stats, veggie, veggie.numOfPack, product.numOfBoxes)
-                            elif isinstance(veggie, UnitPriceVeggie):
-                                self._add_veggie_stats(product_stats, veggie, veggie.quantity, product.numOfBoxes)
+                        self._add_product_stats(product_stats, product, product.numOfBoxes)
+
                     else:
                         if isinstance(product, WeightedVeggie):
-                            self._add_veggie_stats(product_stats, product, product.weight)
+                            self._add_product_stats(product_stats, product, product.weight)
                         elif isinstance(product, PackVeggie):
-                            self._add_veggie_stats(product_stats, product, product.numOfPack)
+                            self._add_product_stats(product_stats, product, product.numOfPack)
                         elif isinstance(product, UnitPriceVeggie):
-                            self._add_veggie_stats(product_stats, product, product.quantity)
+                            self._add_product_stats(product_stats, product, product.quantity)
 
             product_list = []
             for veggie_id, stats in product_stats.items():
@@ -259,23 +254,28 @@ class OrderService:
             print(f"Error in get_top_products: {str(e)}")
             return str(e)
 
-    def _add_veggie_stats(self, stats_dict, veggie, quantity, premadebox_quantity=None):
+    def _add_product_stats(self, stats_dict, product, quantity):
         """! Helper method to add or update veggie statistics
         @param stats_dict: Dictionary holding the statistics
-        @param veggie: Veggie object
+        @param veggie: Veggie object or Premadebox object
         @param quantity: Quantity to add
         """
-        if not hasattr(veggie, 'vegName'):
-            return
         
-        veggie_id = veggie.product_id
-        if veggie_id not in stats_dict:
-            stats_dict[veggie_id] = {
-                'name': veggie.vegName,
-                'type': veggie.__mapper_args__['polymorphic_identity'],
-                'quantity': 0
-            }
-        if premadebox_quantity:
-            stats_dict[veggie_id]['quantity'] += float(quantity) * float(premadebox_quantity)
+        product_id = product.product_id
+
+        if product.type == 'premadebox':
+            if product_id not in stats_dict:
+                stats_dict[product_id] = {
+                    'name': f"Premadebox {product.boxSize}",
+                    'type': product.type,
+                    'quantity': 0
+                }
+            stats_dict[product_id]['quantity'] += float(quantity)
         else:
-            stats_dict[veggie_id]['quantity'] += float(quantity)
+            if product_id not in stats_dict:
+                stats_dict[product_id] = {
+                    'name': product.vegName,
+                    'type': product.type,
+                    'quantity': 0
+                }
+            stats_dict[product_id]['quantity'] += float(quantity)

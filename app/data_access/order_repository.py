@@ -1,9 +1,6 @@
-from sqlalchemy.orm import Session, aliased
-from sqlalchemy import union_all
+from sqlalchemy.orm import Session
 from app.models.Order import *
 from app.models.Product import *
-from decimal import Decimal
-
 
 class OrderRepository:
     """! OrderRepository class for data access.
