@@ -227,11 +227,11 @@ class OrderService:
                     if isinstance(product, PremadeBox):
                         for veggie in product.veggies:
                             if isinstance(veggie, WeightedVeggie):
-                                self._add_veggie_stats(product_stats, veggie, veggie.weight)
+                                self._add_veggie_stats(product_stats, veggie, veggie.weight, product.numOfBoxes)
                             elif isinstance(veggie, PackVeggie):
-                                self._add_veggie_stats(product_stats, veggie, veggie.numOfPack)
+                                self._add_veggie_stats(product_stats, veggie, veggie.numOfPack, product.numOfBoxes)
                             elif isinstance(veggie, UnitPriceVeggie):
-                                self._add_veggie_stats(product_stats, veggie, veggie.quantity)
+                                self._add_veggie_stats(product_stats, veggie, veggie.quantity, product.numOfBoxes)
                     else:
                         if isinstance(product, WeightedVeggie):
                             self._add_veggie_stats(product_stats, product, product.weight)
@@ -259,7 +259,7 @@ class OrderService:
             print(f"Error in get_top_products: {str(e)}")
             return str(e)
 
-    def _add_veggie_stats(self, stats_dict, veggie, quantity):
+    def _add_veggie_stats(self, stats_dict, veggie, quantity, premadebox_quantity=None):
         """! Helper method to add or update veggie statistics
         @param stats_dict: Dictionary holding the statistics
         @param veggie: Veggie object
@@ -275,4 +275,7 @@ class OrderService:
                 'type': veggie.__mapper_args__['polymorphic_identity'],
                 'quantity': 0
             }
-        stats_dict[veggie_id]['quantity'] += float(quantity)
+        if premadebox_quantity:
+            stats_dict[veggie_id]['quantity'] += float(quantity) * float(premadebox_quantity)
+        else:
+            stats_dict[veggie_id]['quantity'] += float(quantity)
