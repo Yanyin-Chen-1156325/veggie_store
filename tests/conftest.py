@@ -5,9 +5,7 @@ from flask_login import LoginManager
 import pymysql
 pymysql.install_as_MySQLdb()
 import config
-import data
 from app.database import db
-from app import init_setting, init_person, login_manager 
 
 @pytest.fixture
 def app():

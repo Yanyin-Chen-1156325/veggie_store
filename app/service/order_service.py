@@ -1,5 +1,6 @@
 from app.data_access.order_repository import OrderRepository
 from app.models.Order import *
+from app.models.Product import *
 from .. import db
 from datetime import datetime, timedelta
 
@@ -213,14 +214,65 @@ class OrderService:
         @param limit: Number of top products. Default is 5.
         @return: List of top products.
         """
-        top_products = self.order_repository.get_top_products(limit)
+        try:
+            orders = self.order_repository.get_active_orders_with_items()
+            if isinstance(orders, str):
+                return orders
+
+            product_stats = {}
+            for order in orders:
+                for item in order.orderitems:
+                    product = item.product
+                    
+                    if isinstance(product, PremadeBox):
+                        for veggie in product.veggies:
+                            if isinstance(veggie, WeightedVeggie):
+                                self._add_veggie_stats(product_stats, veggie, veggie.weight)
+                            elif isinstance(veggie, PackVeggie):
+                                self._add_veggie_stats(product_stats, veggie, veggie.numOfPack)
+                            elif isinstance(veggie, UnitPriceVeggie):
+                                self._add_veggie_stats(product_stats, veggie, veggie.quantity)
+                    else:
+                        if isinstance(product, WeightedVeggie):
+                            self._add_veggie_stats(product_stats, product, product.weight)
+                        elif isinstance(product, PackVeggie):
+                            self._add_veggie_stats(product_stats, product, product.numOfPack)
+                        elif isinstance(product, UnitPriceVeggie):
+                            self._add_veggie_stats(product_stats, product, product.quantity)
+
+            product_list = []
+            for veggie_id, stats in product_stats.items():
+                product_list.append({
+                    'name': stats['name'],
+                    'type': stats['type'],
+                    'quantity': stats['quantity'],
+                    'id': veggie_id
+                })
+
+            top_products = sorted(product_list, 
+                                key=lambda x: x['quantity'], 
+                                reverse=True)[:limit]
+
+            return top_products
+
+        except Exception as e:
+            print(f"Error in get_top_products: {str(e)}")
+            return str(e)
+
+    def _add_veggie_stats(self, stats_dict, veggie, quantity):
+        """! Helper method to add or update veggie statistics
+        @param stats_dict: Dictionary holding the statistics
+        @param veggie: Veggie object
+        @param quantity: Quantity to add
+        """
+        if not hasattr(veggie, 'vegName'):
+            return
         
-        if isinstance(top_products, str) is True:
-            results = top_products
-        else:
-            results = [{
-                'name': result[0],
-                'quantity': float(result[2]) if result[2] else 0,
-                'type': result[1],
-            } for result in top_products]
-        return results
+        veggie_id = veggie.product_id
+        if veggie_id not in stats_dict:
+            stats_dict[veggie_id] = {
+                'name': veggie.vegName,
+                'type': veggie.__mapper_args__['polymorphic_identity'],
+                'quantity': 0
+            }
+        stats_dict[veggie_id]['quantity'] += float(quantity)

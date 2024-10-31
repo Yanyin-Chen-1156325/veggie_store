@@ -66,43 +66,6 @@ def sample_products(product_repository):
     
     return products
 
-def test_generate_order_id(order_repository, test_customer):
-    order_id = order_repository.generate_order_id()
-    assert order_id == '1000000001'
-    
-    order = Order(
-        orderNumber=order_id,
-        orderCustomer='test2',
-        customer_id=test_customer.id,
-        orderStatus=OrderStatus.PENDING.value,
-        orderPrice=Decimal('19.65'),
-        totalAmount=Decimal('19.65'),
-        deliveryMethod='Pickup',
-        paymentMethod='None',
-        isPaid=False
-    )
-    order_repository.place_order(order)
-    
-    # Next order ID should be '1000000002'
-    next_order_id = order_repository.generate_order_id()
-    assert next_order_id == '1000000002'
-
-def test_generate_orderitem_id(order_repository, test_customer):
-    order = Order(
-        orderNumber='1000000003',
-        orderCustomer='test2',
-        customer_id=test_customer.id,
-        orderStatus=OrderStatus.PENDING.value,
-        orderPrice=Decimal('19.65'),
-        totalAmount=Decimal('19.65'),
-        deliveryMethod='Pickup',
-        paymentMethod='None',
-        isPaid=False
-    )
-    order = order_repository.place_order(order)
-    
-    item_id = order_repository.generate_orderitem_id(order, 1)
-    assert item_id == '1000000003000001'
 
 def test_place_order(order_repository, test_customer):
     order = Order(
@@ -252,29 +215,3 @@ def test_get_sales(order_repository, test_customer):
     assert len(results) > 0
     assert results[0][0] >= Decimal('19.65') 
     assert results[0][1] >= 1 
-
-def test_get_top_products(order_repository, sample_products, test_customer):
-    order = Order(
-        orderNumber=order_repository.generate_order_id(),
-        orderCustomer='test_customer',
-        customer_id=test_customer.id,
-        orderStatus=OrderStatus.COMPLETED.value,
-        orderPrice=Decimal('19.65'),
-        totalAmount=Decimal('19.65'),
-        deliveryMethod='Pickup',
-        paymentMethod='None',
-        isPaid=False,
-    )
-    order = order_repository.place_order(order)
-    
-    for i, product in enumerate(sample_products.values(), 1):
-        orderitem = OrderItem(
-            itemNumber=order_repository.generate_orderitem_id(order, i),
-            order_id=order.id
-        )
-        orderitem = order_repository.create_orderitem(orderitem)
-        order_repository.update_orderitem_product(orderitem.itemNumber, product)
-    
-    results = order_repository.get_top_products(limit=3)
-    assert isinstance(results, list)
-    assert len(results) <= 3

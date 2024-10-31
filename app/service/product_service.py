@@ -40,8 +40,8 @@ class ProductService:
                 premadebox = PremadeBox(
                     boxSize=item['name'],
                     numOfBoxes=item['quantity'],
-                     boxPrice=item['value']
-                     )
+                    boxPrice=item['value']
+                    )
                 
                 rlt1 = self.product_repository.add_product(premadebox)
                 if isinstance(rlt1, str) is True:
@@ -49,7 +49,7 @@ class ProductService:
                 
                 veggies = []
                 for veggie in item['boxitem']:
-                    veggie_in_box = self.create_veggie(veggie)
+                    veggie_in_box = self.create_veggie(veggie, rlt1.numOfBoxes)
                     veggies.append(veggie_in_box)
 
                 product = self.product_repository.update_premadebox_veggie(rlt1.id, veggies)
@@ -60,7 +60,7 @@ class ProductService:
         except Exception as e:
             return str(e)
         
-    def create_veggie(self, item):
+    def create_veggie(self, item, premadebox_quantity=None):
         """! Create a veggie.
         @param item: Veggie details.
         @return: Veggie object or error message.
@@ -68,15 +68,15 @@ class ProductService:
         try:
             if item['type'] == 'weight':
                 product = WeightedVeggie(vegName=item['name'],
-                                        weight=item['quantity'],
+                                        weight=item['quantity'] if premadebox_quantity is None else float(item['quantity']) * int(premadebox_quantity),
                                         pricePerKilo=item['value'])
             elif item['type'] == 'pack':
                 product = PackVeggie(vegName=item['name'],
-                                    numOfPack=item['quantity'],
+                                    numOfPack=item['quantity'] if premadebox_quantity is None else int(item['quantity']) * int(premadebox_quantity),
                                     pricePerPack=item['value'])
             elif item['type'] == 'unit':
                 product = UnitPriceVeggie(vegName=item['name'],
-                                        quantity=item['quantity'],
+                                        quantity=item['quantity'] if premadebox_quantity is None else int(item['quantity']) * int(premadebox_quantity),
                                         pricePerUnit=item['value'])
             else:
                 return "Invalid veggie type"

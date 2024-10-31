@@ -133,97 +133,20 @@ class OrderRepository:
         except Exception as e: 
             return str(e)
 
-    def get_top_products(self, limit=5):
-        """! Get the top products by quantity sold.
-        @param limit: Number of products to return. Default is 5.
-        @return: List of top products.
+    def get_active_orders_with_items(self):
+        """! Get all non-cancelled orders with their items and products
+        @return: List of orders with their items
         """
-        def create_weighted_query():
-            """! Create a query for weighted veggies."""
-            VeggieW = aliased(Veggie, flat=True)
-            WeightedVeggieA = aliased(WeightedVeggie, flat=True)
-            ProductW = aliased(Product, flat=True)
-            
-            return (
-                db.session.query(
-                    VeggieW.vegName.label('veg_name'),
-                    ProductW.type.label('veg_type'),
-                    WeightedVeggieA.weight.cast(db.Numeric(10, 2)).label('quantity')
-                )
-                .select_from(OrderItem)
-                .join(Order, Order.id == OrderItem.order_id)
-                .join(WeightedVeggieA, WeightedVeggieA.veggie_id == OrderItem.product_id)
-                .join(VeggieW, VeggieW.product_id == WeightedVeggieA.veggie_id)
-                .join(ProductW, ProductW.id == VeggieW.product_id)
-                .filter(Order.orderStatus != OrderStatus.CANCELLED.value)
-            )
-
-        def create_pack_query():
-            """! Create a query for packed veggies."""
-            VeggieP = aliased(Veggie, flat=True)
-            PackVeggieA = aliased(PackVeggie, flat=True)
-            ProductP = aliased(Product, flat=True)
-            
-            return (
-                db.session.query(
-                    VeggieP.vegName.label('veg_name'),
-                    ProductP.type.label('veg_type'),
-                    PackVeggieA.numOfPack.cast(db.Numeric(10, 2)).label('quantity')
-                )
-                .select_from(OrderItem)
-                .join(Order, Order.id == OrderItem.order_id)
-                .join(PackVeggieA, PackVeggieA.veggie_id == OrderItem.product_id)
-                .join(VeggieP, VeggieP.product_id == PackVeggieA.veggie_id)
-                .join(ProductP, ProductP.id == VeggieP.product_id)
-                .filter(Order.orderStatus != OrderStatus.CANCELLED.value)
-            )
-
-        def create_unit_query():
-            """! Create a query for unit veggies."""
-            VeggieU = aliased(Veggie, flat=True)
-            UnitPriceVeggieA = aliased(UnitPriceVeggie, flat=True)
-            ProductU = aliased(Product, flat=True)
-            
-            return (
-                db.session.query(
-                    VeggieU.vegName.label('veg_name'),
-                    ProductU.type.label('veg_type'),
-                    UnitPriceVeggieA.quantity.cast(db.Numeric(10, 2)).label('quantity')
-                )
-                .select_from(OrderItem)
-                .join(Order, Order.id == OrderItem.order_id)
-                .join(UnitPriceVeggieA, UnitPriceVeggieA.veggie_id == OrderItem.product_id)
-                .join(VeggieU, VeggieU.product_id == UnitPriceVeggieA.veggie_id)
-                .join(ProductU, ProductU.id == VeggieU.product_id)
-                .filter(Order.orderStatus != OrderStatus.CANCELLED.value)
-            )
-        """! Create a query for the union of all veggie types."""
-        union_query = union_all(
-            create_weighted_query(),
-            create_pack_query(),
-            create_unit_query()
-        ).select()
-        """! Create a subquery for the union query."""
-        subq = db.session.query(
-            union_query.c.veg_name,
-            union_query.c.veg_type,
-            union_query.c.quantity
-        ).subquery()
-        """! Create a final query to group by veggie name and type."""
-        final_query = (
-            db.session.query(
-                subq.c.veg_name,
-                subq.c.veg_type,
-                db.func.sum(subq.c.quantity).label('total_quantity')
-            )
-            .group_by(subq.c.veg_name, subq.c.veg_type)
-            .order_by(db.func.sum(subq.c.quantity).desc())
-            .limit(limit)
-        )
-
         try:
-            results = final_query.all()
-            return [(veg_name, veg_type, Decimal(str(quantity))) 
-                    for veg_name, veg_type, quantity in results]
+            orders = (
+                self.db_session.query(Order)
+                .filter(Order.orderStatus != OrderStatus.CANCELLED.value)
+                .options(db.joinedload(Order.orderitems)
+                        .joinedload(OrderItem.product))
+                .all()
+            )
+            return orders
         except Exception as e:
+            print(f"Error in get_active_orders: {str(e)}")
             return str(e)
+        

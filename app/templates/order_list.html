@@ -1,54 +1,128 @@
 {% extends "base.html" %}
-
 {% block title %}Order List{% endblock %}
-
 {% block content %}
+
 <h2 class="display-4 text-primary border-bottom pb-2 mb-4 mt-4">Order List</h2>
-<table class="table table-striped table-hover">
-    {% if orders %}
-    <thead>
-        <tr>
-        <th>Order Number</th>
-        <th>Customer</th>
-        <th>Total Amount</th>
-        <th>Delivery</th>
-        <th>Paid</th>
-        <th>Payment</th>
-        <th>Status</th>
-        <th>Date</th>
-        <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for order in orders %}
-        <tr>
-            <td>{{ order.orderNumber }}</td>
-            <td>{{ order.orderCustomer }}</td>
-            <td>{{ order.totalAmount }}</td>
-            <td>{{ order.deliveryMethod }}</td>
-            <td>{{ 'YES' if order.isPaid else 'NO'  }}</td>
-            <td>{{ order.paymentMethod if order.paymentMethod == 'Balance' else order.paymentMethod }}</td>
-            <td><span class="badge {% if order.orderStatus == 'pending' %}bg-warning
-                {% elif order.orderStatus == 'accepted' %}bg-info
-                {% elif order.orderStatus == 'delivery' %}bg-primary
-                {% elif order.orderStatus == 'completed' %}bg-success
-                {% elif order.orderStatus == 'cancelled' %}bg-danger
-                {% elif order.orderStatus == 'pick up' %}bg-secondary{% endif %}">
-                {{ order.orderStatus }}
-                </span>
-            </td>
-            <td>{{ order.orderDate.strftime('%d/%m/%Y %H:%M:%S') }}</td>
-            <td>
-                <a href="{{ url_for('order.view_order', id=order.id) }}" class="btn btn-sm btn-info">View</a>
-            </td>
-        </tr>
-        {% endfor %}          
-    </tbody>
-    {% else %}
-        <div class="bg-info bg-opacity-10 text-center p-3">
-            No order has been placed. 
-            <div><a href="{{ url_for('product.list_products') }}" class="btn btn-success text-center mt-4">Start shopping now!</a></div>
+
+{% if orders %}
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a href="#current" class="nav-link active" data-bs-toggle="tab" role="tab" aria-selected="true">
+                Current Orders
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a href="#history" class="nav-link" data-bs-toggle="tab" role="tab" aria-selected="false">
+                Order History
+            </a>
+        </li>
+    </ul>
+
+    <!-- Tab content -->
+    <div class="tab-content mt-4">
+        <!-- Current Orders Tab -->
+        <div id="current" class="tab-pane fade show active" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order Number</th>
+                            <th>Customer</th>
+                            <th>Total Amount</th>
+                            <th>Delivery</th>
+                            <th>Paid</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            {% if order.orderStatus in ['pending', 'accepted', 'delivery', 'pick up'] %}
+                                <tr>
+                                    <td>{{ order.orderNumber }}</td>
+                                    <td>{{ order.orderCustomer }}</td>
+                                    <td>{{ order.totalAmount }}</td>
+                                    <td>{{ order.deliveryMethod }}</td>
+                                    <td>{{ 'YES' if order.isPaid else 'NO' }}</td>
+                                    <td>{{ order.paymentMethod if order.paymentMethod == 'Balance' else order.paymentMethod }}</td>
+                                    <td>
+                                        <span class="badge {% if order.orderStatus == 'pending' %}bg-warning
+                                            {% elif order.orderStatus == 'accepted' %}bg-info
+                                            {% elif order.orderStatus == 'delivery' %}bg-primary
+                                            {% elif order.orderStatus == 'pick up' %}bg-secondary{% endif %}">
+                                            {{ order.orderStatus }}
+                                        </span>
+                                    </td>
+                                    <td>{{ order.orderDate.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('order.view_order', id=order.id) }}" 
+                                           class="btn btn-sm btn-info">View</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-    {% endif %}
-</table>
+
+        <!-- Order History Tab -->
+        <div id="history" class="tab-pane fade" role="tabpanel">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order Number</th>
+                            <th>Customer</th>
+                            <th>Total Amount</th>
+                            <th>Delivery</th>
+                            <th>Paid</th>
+                            <th>Payment</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                            {% if order.orderStatus in ['cancelled', 'completed'] %}
+                                <tr>
+                                    <td>{{ order.orderNumber }}</td>
+                                    <td>{{ order.orderCustomer }}</td>
+                                    <td>{{ order.totalAmount }}</td>
+                                    <td>{{ order.deliveryMethod }}</td>
+                                    <td>{{ 'YES' if order.isPaid else 'NO' }}</td>
+                                    <td>{{ order.paymentMethod if order.paymentMethod == 'Balance' else order.paymentMethod }}</td>
+                                    <td>
+                                        <span class="badge {% if order.orderStatus == 'completed' %}bg-success
+                                            {% elif order.orderStatus == 'cancelled' %}bg-danger{% endif %}">
+                                            {{ order.orderStatus }}
+                                        </span>
+                                    </td>
+                                    <td>{{ order.orderDate.strftime('%d/%m/%Y %H:%M:%S') }}</td>
+                                    <td>
+                                        <a href="{{ url_for('order.view_order', id=order.id) }}" 
+                                           class="btn btn-sm btn-info">View</a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% else %}
+    <div class="bg-info bg-opacity-10 text-center p-3">
+        <p class="mb-3">No order has been placed.</p>
+        <div>
+            <a href="{{ url_for('product.list_products') }}" 
+               class="btn btn-success text-center">Start shopping now!</a>
+        </div>
+    </div>
+{% endif %}
+
 {% endblock %}

@@ -129,11 +129,11 @@
                                 {% for product in top_products %}
                                 <tr>
                                     <td>
-                                    {% if loop.index == 1 %}
-                                        <span class="badge bg-warning">1</span>
-                                    {% else %}
-                                        {{ loop.index }}
-                                    {% endif %}
+                                        {% if loop.index == 1 %}
+                                            <span class="badge bg-warning">1</span>
+                                        {% else %}
+                                            {{ loop.index }}
+                                        {% endif %}
                                     </td>
                                     <td>{{ product.name }}</td>
                                     <td>{{ product.type }}</td>
