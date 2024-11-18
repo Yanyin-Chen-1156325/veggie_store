@@ -4,10 +4,10 @@
 
 {% block content %}
 <h2 class="text-center">Login</h2>
-    <div class="d-flex justify-content-center align-items-top">
+    <div class="container d-flex justify-content-center align-items-top mt-4">
         <form id ="loginForm" class="row g-3 needs-validation" method="POST" action="{{ url_for('auth.login') }}" novalidate>
             <!-- Username -->
-            <div class="col-md-12">
+            <div class="col-md-12 mb-3">
                 <label for="Username" class="form-label">Username:</label>
                 <input type="text" class="form-control" id="username" name="username" value={{username}} required
                     pattern="^[a-zA-Z0-9_]+$">
@@ -16,7 +16,7 @@
                 </div>
             </div>
             <!-- Password -->
-            <div class="col-md-12">
+            <div class="col-md-12 mb-3">
                 <label for="password" class="form-label">Password:</label>
                 <input type="password" class="form-control" id="password" name="password" value={{password}} required
                     pattern="^[A-Za-z\d@$!%*?&]+$">
@@ -24,8 +24,9 @@
                         Password can only contain letters, numbers, and these special characters: @$!%*?&
                     </div>
             </div>
-            <div>
-                <input type="submit" value="Login">
+            <!-- Submit Button -->
+            <div class="col-12">
+                <button class="btn btn-primary w-100" type="submit">Login</button>
             </div>
         </form>
         

@@ -12,13 +12,13 @@
         {% set is_cancelled = order.orderStatus == 'cancelled' %}
         <div class="card-header bg-primary text-white">
             <div class="d-flex justify-content-between align-items-center">
-              <h3 class="mb-0">Order</h3>
-              <span class="badge bg-white text-primary fs-6">ID: {{ order.orderNumber }}</span>
+                <h3 class="mb-0">Order</h3>
+                <span class="badge bg-white text-primary fs-6">ID: {{ order.orderNumber }}</span>
             </div>
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 mb-3">
                     <h4 class="mb-3">Customer Information</h4>
                     <p><strong>Customer Name:</strong> {{ order.orderCustomer }}</p>
                     <p><strong>Order Date:</strong> {{ order.orderDate.strftime('%d/%m/%Y %H:%M:%S') }}</p>
@@ -33,7 +33,7 @@
                         </span>
                     </p>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 mb-3">
                     <h4 class="mb-3">Delivery & Payment Details</h4>
                     <p><strong>Delivery Method:</strong> {{ order.deliveryMethod }}</p>
                     {% if order.deliveryMethod == 'delivery' %}
